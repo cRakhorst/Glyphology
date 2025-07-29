@@ -29,24 +29,90 @@
 }
 
 .break {
-    width: 100vw;
-    height: 1.12vh;
-    background-color: #BF7534;
+  width: 100vw;
+  height: 1.12vh;
+  background-color: #bf7534;
 }
 
 .plank {
-    width: 100vw;
-    height: 7.03125vh;
-    background-color: #D9933D;
+  width: 100vw;
+  height: 7.03125vh;
+  background-color: #d9933d;
 }
 
 .chair {
+    width: 500px;
+    height: 500px;
     position: absolute;
     top: 370px;
-    left: calc(50% - 220px);
-    width: 440px;
-    height: 440px;
-    background-color: #E88AC9;
-    border-radius: 50%;
-    clip-path: polygon(0 45%, 100% 45%, 100% 100%, 0% 100%);
+    left: calc(50% - 250px);
+}
+
+#chair-1 {
+  top: 370px;
+  left: calc(50% - 220px);
+  width: 440px;
+  height: 440px;
+  background-color: #e88ac9;
+  border-radius: 50%;
+  clip-path: polygon(0 45%, 100% 45%, 100% 100%, 0% 100%);
+}
+
+.seated-line {
+  width: 440px;
+  height: 14px;
+  background-color: #805588;
+  position: absolute;
+  top: 198px;
+}
+
+.seated-part {
+  width: 350px;
+  height: 350px;
+  position: absolute;
+  background-color: #805588;
+  top: 22px;
+  left: calc(50% - 205px);
+  border-radius: 50%;
+}
+
+.leg-1,
+.leg-2 {
+  width: 20px;
+  height: 85px;
+  background-color: #56696f;
+  position: absolute;
+  border-radius: 20px;
+  rotate: 45deg;
+}
+
+.leg-1 {
+  top: 363px;
+  left: calc(50% - 210px);
+  clip-path: polygon(0 13%, 100% 13%, 100% 100%, 0% 100%);
+}
+
+.leg-2 {
+  top: 363px;
+  left: calc(50% + 131px);
+  clip-path: polygon(0 13%, 100% 13%, 100% 100%, 0% 100%);
+  rotate: -45deg;
+}
+
+.ball {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  border-radius: 50%;
+  background-color: #3c4645;
+}
+
+#ball-1 {
+  top: 410px;
+  left: 5px;
+}
+
+#ball-2 {
+  top: 410px;
+  left: calc(100% - 105px);
 }

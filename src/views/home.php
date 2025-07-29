@@ -15,7 +15,16 @@
     </div>
     <div class="floor">
         <div class="dark-part"></div>
-        <div class="chair"></div>
+        <div class="chair">
+            <div class="ball" id="ball-1"></div>
+            <div class="ball" id="ball-2"></div>
+            <div id="chair-1">
+                <div class="seated-line"></div>
+                <div class="seated-part"></div>
+                <div class="leg-1"></div>
+                <div class="leg-2"></div>
+            </div>
+        </div>
         <div class="pattern">
             <div class="break"></div>
             <div class="plank"></div>
