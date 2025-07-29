@@ -1,0 +1,10 @@
+# Zet URL rewriting aan
+RewriteEngine On
+
+# Sta toegang toe tot bestaande bestanden en mappen
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Stuur alles anders door naar index.php
+RewriteRule ^ index.php [QSA,L]
