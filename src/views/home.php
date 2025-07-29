@@ -10,7 +10,46 @@
 
 <body>
     <div class="table">
-        <div class="table-top"></div>
+        <div class="table-top">
+            <div class="left"></div>
+            <div class="middle">
+                <div class="left-page" id="page"></div>
+                <div class="rings">
+                    <div id="ring"></div>
+                    <div id="ring"></div>
+                    <div id="ring"></div>
+                    <div id="ring"></div>
+                    <div id="ring"></div>
+                    <div id="ring"></div>
+                    <div id="ring"></div>
+                    <div id="ring"></div>
+                    <div id="ring"></div>
+                    <div id="ring"></div>
+                </div>
+                <div class="right-page" id="page">
+                    <div class="header">
+                        <h1>Glyphology</h1>
+                    </div>
+                    <div class="arrow">
+                        <div class="line-1"></div>
+                        <div class="line-2"></div>
+                    </div>
+                    <div class="footer">
+                        <div class="footer-content">
+                            <p id="footer-text">Your username:</p>
+                            <p id="username"></p> <!-- This will be filled by PHP -->
+                            <div class="lines">
+                                <div id="line"></div>
+                                <div id="line"></div>
+                                <div id="line"></div>
+                                <div id="line"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right"></div>
+        </div>
         <div class="table-bottom"></div>
     </div>
     <div class="floor">
