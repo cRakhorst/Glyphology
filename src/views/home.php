@@ -11,7 +11,47 @@
 <body>
     <div class="table">
         <div class="table-top">
-            <div class="left"></div>
+            <div class="left">
+                <div class="top-left">
+                    <img src="/assets/pictures/grom-polaroid.jpg" alt="grom" id="grom-polaroid">
+                    <img src="/assets/pictures/glyph-polaroid.jpg" alt="glyph" id="glyph-polaroid">
+                    <img src="/assets/pictures/milkshake-polaroid.jpg" alt="milkshake" id="milkshake-polaroid">
+                    <img src="/assets/pictures/oops-polaroid.jpg" alt="oops" id="oops-polaroid">
+                    <img src="/assets/pictures/amity-note.png" alt="amity-note" id="amity-note">
+                </div>
+                <div class="bottom-left">
+                    <div class="glyphs notebook">
+                        <div class="small-rings">
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                        </div>
+                        <div id="small-page">
+                            <h1 id="small-page-text">Glyphs</h1>
+                        </div>
+                    </div>
+                    <div class="combos notebook">
+                        <div class="small-rings">
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                            <div id="small-ring"></div>
+                        </div>
+                        <div id="small-page">
+                            <h1 id="small-page-text">Glyph combos</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="middle">
                 <div class="left-page" id="page"></div>
                 <div class="rings">
@@ -53,6 +93,8 @@
         <div class="table-bottom"></div>
     </div>
     <div class="floor">
+        <img src="/assets/pictures/Failed-glyph.png" alt="Failed Glyph" id="failed-glyph">
+        <img src="/assets/pictures/ghost.png" alt="Ghost" id="ghost">
         <div class="dark-part"></div>
         <div class="chair">
             <div class="ball" id="ball-1"></div>
