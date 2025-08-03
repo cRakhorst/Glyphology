@@ -11,6 +11,7 @@ include __DIR__ . '/../src/classes/Database.php';
 $routes = [
  'home' => 'home.php',
  '404' => '404.php',
+ 'login' => 'login.php',
 ];
 
 $baseDir = dirname($_SERVER['SCRIPT_NAME']);

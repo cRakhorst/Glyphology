@@ -7,10 +7,12 @@
   margin: 0;
   padding: 0;
   font-family: glypholagy;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 body {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .table {
@@ -27,7 +29,8 @@ body {
   justify-content: center;
 }
 
-.left, .right {
+.left,
+.right {
   width: 100%;
 }
 
@@ -164,8 +167,9 @@ body {
 .arrow {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  margin-left: auto;
   margin-right: 10px;
+  width: fit-content
 }
 
 .arrow:hover {
@@ -233,6 +237,87 @@ body {
   background-color: black;
 }
 
+#pencil {
+  width:fit-content;
+  height: fit-content;
+  top: 200px;
+  right: 370px;
+}
+
+.right img {
+  width: 100px;
+  height: auto;
+  position: absolute;
+}
+
+#hexsquad {
+  top: 30px;
+  right: 290px;
+  rotate: -10deg;
+}
+
+#luz-vee {
+  top: 30px;
+  right: 120px;
+  rotate: 10deg;
+}
+
+#giraffes {
+  top: 170px;
+  right: 120px;
+  rotate: 10deg;
+}
+
+#king-note {
+  width: 75px;
+  height: 75px;
+  top: 160px;
+  right: 250px;
+  rotate: 12deg;
+}
+
+#stringbean {
+  top: 300px;
+  right: 120px;
+}
+
+.plant-glyph-note {
+  width: 100px;
+  height: 150px;
+  position: absolute;
+  top: 350px;
+  right: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #e4dcb7;
+  border-radius: 20px;
+  border: 1px solid black;
+}
+
+#plant-glyph {
+  width: 75px;
+  height: 75px;
+  position: unset;
+  margin-top: 25px;
+}
+
+#flower {
+  transform: translateY(-35px);
+  width: 38px;
+  height: 38px;
+  position: unset;
+}
+
+#eda-note {
+  width: 75px;
+  height: 75px;
+  rotate: -45deg;
+  top: 470px;
+  right: 215px;
+}
+
 .table-bottom {
   width: 100vw;
   height: 2.9296875vh;
@@ -278,7 +363,7 @@ body {
   width: 500px;
   height: 500px;
   position: absolute;
-  top: 370px;
+  top: 39.787652638404976753899080047921vh;
   left: calc(50% - 220px);
 }
 

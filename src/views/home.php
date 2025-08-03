@@ -88,7 +88,19 @@
                     </div>
                 </div>
             </div>
-            <div class="right"></div>
+            <div class="right">
+                <img src="/assets/pictures/Pencil.png" alt="Pencil" id="pencil">
+                <img src="/assets/pictures/hexsquad.jpg" alt="hexsquad" id="hexsquad">
+                <img src="assets/pictures/luz-vee.jpg" alt="luz-vee" id="luz-vee">
+                <img src="assets/pictures/giraffes.png" alt="giraffes" id="giraffes">
+                <img src="/assets/pictures/king-note.png" alt="king-note" id="king-note">
+                <img src="/assets/pictures/stringbean.png" alt="stringbean" id="stringbean">
+                <div class="plant-glyph-note">
+                    <img src="/assets/pictures/Plant-glyph.png" alt="Plant Glyph" id="plant-glyph">
+                    <img src="/assets/pictures/Flower.png" alt="Flower" id="flower">
+                </div>
+                <img src="/assets/pictures/eda-note.png" alt="eda-note" id="eda-note">
+            </div>
         </div>
         <div class="table-bottom"></div>
     </div>
