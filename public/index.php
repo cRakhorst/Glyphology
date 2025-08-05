@@ -12,6 +12,7 @@ $routes = [
  'home' => 'home.php',
  '404' => '404.php',
  'login' => 'login.php',
+ 'create' => 'create.php',
 ];
 
 $baseDir = dirname($_SERVER['SCRIPT_NAME']);

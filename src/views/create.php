@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glypholagy</title>
-    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/create.css">
 </head>
 
 <body>
@@ -56,22 +56,7 @@
             </div>
             <div class="middle">
                 <div class="left-page" id="page">
-                    <div class="header">
-                        <h1 id="login-header">Login</h1>
-                        <form id="login-form" action="" method="post">
-                            <p id="username-text">Username</p>
-                            <input type="text" name="username" required>
-                            <p id="password-text">Password</p>
-                            <input type="password" name="password" required>
-                        </form>
-                    </div>
-                    <!-- <div class="back-arrow">
-                        <div class="line-1"></div>
-                        <div class="line-2"></div>
-                    </div> -->
-                    <div class="footer">
-                        <button id="login-button" type="submit">Learn magic!</button>
-                    </div>
+
                 </div>
                 <div class="rings">
                     <div id="ring"></div>
@@ -86,24 +71,7 @@
                     <div id="ring"></div>
                 </div>
                 <div class="right-page" id="page">
-                    <div class="header">
-                        <h1 id="register-header">Register</h1>
-                        <form id="register-form" action="" method="post">
-                            <p id="username-text">Username</p>
-                            <input type="text" name="username" id="register-username" required>
-                            <p id="password-text">Password</p>
-                            <input type="password" name="password" id="register-password" required>
-                            <p id="confirm-password-text">Confirm Password</p>
-                            <input type="password" name="confirm_password" id="register-confirm-password" required>
-                        </form>
-                    </div>
-                    <!-- <div class="forward-arrow">
-                        <div class="line-1"></div>
-                        <div class="line-2"></div>
-                    </div> -->
-                    <div class="footer">
-                        <button id="register-button" type="submit">Learn magic!</button>
-                    </div>
+
                 </div>
             </div>
             <div class="right">
@@ -148,7 +116,7 @@
         </div>
     </div>
 
-    <script src="/js/login.js"></script>
+    <script src="/js/create.js"></script>
 </body>
 
 </html>
