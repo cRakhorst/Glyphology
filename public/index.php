@@ -7,6 +7,7 @@ session_start();
 
 require_once __DIR__ . '/../src/classes/autoloader.php';
 include __DIR__ . '/../src/classes/Database.php';
+include __DIR__ . '/../src/classes/functions.php';
 
 $routes = [
  'home' => 'home.php',
@@ -14,6 +15,8 @@ $routes = [
  'login' => 'login.php',
  'create' => 'create.php',
 ];
+
+$db = new Database();
 
 $baseDir = dirname($_SERVER['SCRIPT_NAME']);
 $uri = $_SERVER['REQUEST_URI'];

@@ -124,7 +124,7 @@
     </div>
     <div class="floor">
         <img src="/assets/pictures/Failed-glyph.png" alt="Failed Glyph" id="failed-glyph">
-        <img src="/assets/pictures/ghost.png" alt="Ghost" id="ghost">
+        <?= '<img src="/assets/pictures/ghost.png" alt="Ghost" id="ghost">' ?>
         <div class="dark-part"></div>
         <div class="chair">
             <div class="ball" id="ball-1"></div>

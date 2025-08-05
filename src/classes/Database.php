@@ -1,7 +1,9 @@
 <?php
 
-class Database {
-    private static function connect() {
+class Database
+{
+    private static function connect()
+    {
         $conn = null;
         $servername = "127.0.0.1";
         $username = "glyph_account";
@@ -16,7 +18,8 @@ class Database {
         }
     }
 
-    public static function register($username, $password, $confirm_password) {
+    public static function register($username, $password, $confirm_password)
+    {
         if (!isset($username) || !isset($password) || !isset($confirm_password)) {
             return ["success" => false, "message" => "Missing required fields"];
         }
@@ -46,7 +49,8 @@ class Database {
         }
     }
 
-    public static function login($username, $password) {
+    public static function login($username, $password)
+    {
         if (empty($username) || empty($password)) {
             return ["success" => false, "message" => "Username and password are required"];
         }
@@ -67,7 +71,8 @@ class Database {
         }
     }
 
-    private static function registerValidation($username, $password, $confirm_password) {
+    private static function registerValidation($username, $password, $confirm_password)
+    {
         if (empty($username) || empty($password) || empty($confirm_password)) {
             throw new Exception("All fields are required.");
         }
@@ -80,5 +85,41 @@ class Database {
         if (strlen($password) < 6) {
             throw new Exception("Password must be at least 6 characters long.");
         }
+    }
+
+    public static function getUserById($userId)
+    {
+        $conn = self::connect();
+        $stmt = $conn->prepare("SELECT * FROM glyph_users WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public static function getCustomComboById($comboId)
+    {
+        $conn = self::connect();
+        $stmt = $conn->prepare("SELECT * FROM glyph_combo_custom WHERE custom_combo_id = ?");
+        $stmt->execute([$comboId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function showGlyphComboComponents($comboId)
+    {
+        $conn = self::connect();
+
+        $stmt = $conn->prepare("SELECT gcc.component_id, gcc.type, gcc.size, gcc.coordinates
+        FROM glyph_combo_custom_has_components gchc
+        JOIN glyph_combo_components gcc ON gcc.component_id = gchc.glyph_combo_components_component_id
+        WHERE gchc.glyph_combo_custom_custom_combo_id = ?
+    ");
+        $stmt->execute([$comboId]);
+        $components = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo "<canvas id='glyph-canvas' width='300' height='300'></canvas>";
+
+        // Geef JSON data mee aan JS
+        echo "<script>
+        const glyphComponents = " . json_encode($components) . ";
+    </script>";
     }
 }

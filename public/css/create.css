@@ -181,50 +181,16 @@ body {
 }
 
 .header {
-  margin-top: 50px;
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 34px;
+  font-size: 20px;
 }
 
 .header p {
   font-size: 18px;
-}
-
-#login-form,
-#register-form {
-  width: 80%;
-  display: flex;
-  flex-direction: column;
-}
-
-#password-text, #confirm-password-text {
-    margin-top: 10px;
-}
-
-#login-form input,
-#register-form input {
-  width: 100%;
-  height: 30px;
-  background-color: #e4dcb7;
-  border: 1px solid black;
-}
-
-.footer button {
-    width: 200px;
-    height: 46px;
-    background-color: #C4B6E3;
-    border-radius: 5px;
-    font-size: 28px;
-    border: 1px solid black;
-    margin-bottom: 30px;
-    z-index: 1000;
-}
-
-button:hover {
-  cursor: pointer;
 }
 
 .back-arrow, .forward-arrow {
@@ -279,10 +245,18 @@ button:hover {
 .footer {
   display: flex;
   justify-content: center;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: center;
 }
 
-#username {
-  height: 20px;
+#info {
+    font-size: 14px;
+}
+
+#description {
+    width: 65%;
+    margin-bottom: 20px;
 }
 
 .footer-content {
@@ -292,17 +266,18 @@ button:hover {
   margin-bottom: 40px;
 }
 
-.lines {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 22px;
-}
-
 #line {
   width: 240px;
   height: 2px;
   background-color: black;
+}
+
+#signature {
+    width: fit-content;
+    height: fit-content;
+    position: relative;
+    bottom: -460px;
+    left: 40px;
 }
 
 #pencil {
@@ -501,3 +476,5 @@ button:hover {
   top: 410px;
   left: calc(100% - 105px);
 }
+
+/* CSS for the glyphs and combos */
