@@ -1,6 +1,9 @@
 # Zet URL rewriting aan
 RewriteEngine On
 
+# Route voor API endpoints
+RewriteRule ^api/register$ api/register.php [L]
+
 # Sta toegang toe tot bestaande bestanden en mappen
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
