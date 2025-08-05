@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((data) => {
         if (data.success) {
           registerForm.reset();
+          window.location.href = "create";
         } else {
           errorMessage.textContent =
             data.message || "Registration failed. Please try again.";
@@ -43,6 +44,39 @@ document.addEventListener("DOMContentLoaded", function () {
         // Re-enable the button and restore text
         registerButton.disabled = false;
         registerButton.textContent = "Learn magic!";
+      });
+  });
+
+  const loginForm = document.getElementById("login-form");
+  const loginButton = document.getElementById("login-button");
+
+  loginButton.addEventListener("click", function (e) {
+    e.preventDefault();
+    const formData = new FormData(loginForm);
+    errorMessage.style.display = "none";
+    loginButton.disabled = true;
+    loginButton.textContent = "Logging in...";
+    fetch("/api/login", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          window.location.href = "create"; // Redirect to home page on successful login
+        } else {
+          errorMessage.textContent =
+            data.message || "Login failed. Please try again.";
+          errorMessage.style.display = "block";
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("An error occurred during login.");
+      })
+      .finally(() => {
+        loginButton.disabled = false;
+        loginButton.textContent = "Learn magic!";
       });
   });
 
