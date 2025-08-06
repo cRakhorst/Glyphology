@@ -65,6 +65,10 @@
                                           echo htmlspecialchars($db->getUserById(12)['username'] ?? 'Unknown User');
                                           ?></p>
           </div>
+          <div class="back-arrow">
+            <div class="line-1"></div>
+            <div class="line-2"></div>
+          </div>
           <div class="content">
             <?php
             $db->showGlyphComboComponents(1); // Assuming 1 is the combo ID
@@ -90,8 +94,37 @@
           <div id="ring"></div>
         </div>
         <div class="right-page" id="page">
+          <div class="header">
+            <div class="top">
+              <p id="header-text">Title: </p>
+              <p id="characters">0/20</p>
+            </div>
+            <input type="text" id="title">
+          </div>
 
-          <img src="/assets/pictures/Signature.png" alt="signature" id="signature">
+          <div class="content">
+            <canvas id="combo-canvas"></canvas>
+            <div class="choose">
+              <img src="/assets/pictures/pin.png" alt="pin" id="pin">
+              <p id="choose-text">Add a node:</p>
+              <p id="line">Straight line</p>
+              <p id="curved-line">Curved line</p>
+              <p id="glyph">Glyph</p>
+              <p id="circle">Circle</p>
+            </div>
+          </div>
+          <div class="forward-arrow">
+            <div class="line-1"></div>
+            <div class="line-2"></div>
+          </div>
+          <div class="footer">
+            <div class="top">
+              <p id="header-text">Description: </p>
+              <p id="characters">0/150</p>
+            </div>
+            <textarea id="description-custom"></textarea>
+            <img src="/assets/pictures/Signature.png" alt="signature" id="signature">
+          </div>
         </div>
       </div>
       <div class="right">

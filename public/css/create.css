@@ -22,16 +22,16 @@ body {
 }
 
 #error-message {
-    background-color: #F8D7DA;
-    color: black;
-    padding: 10px;
-    border: 1px solid #721C24;
-    border-radius: 5px;
-    position: absolute;
-    top: 50px;
-    left: 46%;
-    display: none;
-    z-index: 1000;
+  background-color: #f8d7da;
+  color: black;
+  padding: 10px;
+  border: 1px solid #721c24;
+  border-radius: 5px;
+  position: absolute;
+  top: 50px;
+  left: 46%;
+  display: none;
+  z-index: 1000;
 }
 
 .table-top {
@@ -90,7 +90,7 @@ body {
   height: auto;
   rotate: 30deg;
   top: 480px;
-  left: 520px;
+  left: 24.833434282253179890975166565718vw;
 }
 
 .notebook {
@@ -193,12 +193,54 @@ body {
   font-size: 18px;
 }
 
-.back-arrow, .forward-arrow {
+.top {
+  display: flex;
+  width: 70%;
+  justify-content: space-between;
+}
+
+#title {
+  width: 70%;
+  height: 30px;
+  background-color: #e4dcb7;
+  border: 2px solid black;
+  padding-left: 5px;
+}
+
+#description-custom {
+  height: 70px;
+  background-color: #e4dcb7;
+  border: 2px solid black;
+  padding: 5px;
+  margin-bottom: 20px;
+  z-index: 1000;
+  display: flex;
+  resize: none;
+  overflow: hidden;
+}
+
+.right-page .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 100%;
+}
+
+.back-arrow,
+.forward-arrow {
   display: flex;
   flex-direction: column;
   margin-left: auto;
   margin-right: 10px;
   width: fit-content;
+  position: relative;
+  top: 150px;
+}
+
+.forward-arrow {
+    top: 0px;
 }
 
 .left-page .back-arrow {
@@ -206,11 +248,13 @@ body {
   rotate: 180deg;
 }
 
-.back-arrow:hover, .forward-arrow:hover {
+.back-arrow:hover,
+.forward-arrow:hover {
   cursor: pointer;
 }
 
-.back-arrow > div, .forward-arrow > div {
+.back-arrow > div,
+.forward-arrow > div {
   width: 10px;
   height: 2px;
   background-color: black;
@@ -251,12 +295,12 @@ body {
 }
 
 #info {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 #description {
-    width: 65%;
-    margin-bottom: 20px;
+  width: 65%;
+  margin-bottom: 20px;
 }
 
 .footer-content {
@@ -266,25 +310,19 @@ body {
   margin-bottom: 40px;
 }
 
-#line {
-  width: 240px;
-  height: 2px;
-  background-color: black;
-}
-
 #signature {
-    width: fit-content;
-    height: fit-content;
-    position: relative;
-    bottom: -460px;
-    left: 40px;
+  width: fit-content;
+  height: fit-content;
+  position: relative;
+  bottom: 10px;
+  left: -20px;
 }
 
 #pencil {
   width: fit-content;
   height: fit-content;
   top: 200px;
-  right: 24.208884vw;
+  right: 22.208884vw;
 }
 
 .right img {
@@ -478,3 +516,39 @@ body {
 }
 
 /* CSS for the glyphs and combos */
+
+#combo-canvas {
+    border: 1px solid black;
+    margin-top: 20px;
+    height: 227px;
+    width: 260px;
+}
+
+.choose {
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    position: absolute;
+    width: 200px;
+    background-color: #e4dcb7;
+    border: 2px solid black;
+    gap: 3px;
+    padding: 5px;
+    top: -80px;
+    left: -100px;
+}
+
+#pin {
+    position: absolute;
+    top: -15px;
+    left: 100px;
+}
+
+#line, #curved-line, #glyph, #circle {
+    width: 100%;
+}
+
+#line:hover, #curved-line:hover, #glyph:hover, #circle:hover {
+    background-color: #7e7965;
+    cursor: pointer;
+}
