@@ -106,7 +106,10 @@
             <canvas id="combo-canvas"></canvas>
             <div class="choose">
               <img src="/assets/pictures/pin.png" alt="pin" id="pin">
-              <p id="choose-text">Add a node:</p>
+              <div class="top-choose">
+                <p id="choose-text">Add a node:</p>
+                <p id="cross">X</p>
+              </div>
               <p id="line">Straight line</p>
               <p id="curved-line">Curved line</p>
               <p id="glyph">Glyph</p>

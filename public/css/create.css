@@ -240,7 +240,7 @@ body {
 }
 
 .forward-arrow {
-    top: 0px;
+  top: 0px;
 }
 
 .left-page .back-arrow {
@@ -518,37 +518,54 @@ body {
 /* CSS for the glyphs and combos */
 
 #combo-canvas {
-    border: 1px solid black;
-    margin-top: 20px;
-    height: 227px;
-    width: 260px;
+  border: 1px solid black;
+  margin-top: 20px;
+  height: 227px;
+  width: 260px;
 }
 
 .choose {
-    display: none;
-    flex-direction: column;
-    align-items: flex-start;
-    position: absolute;
-    width: 200px;
-    background-color: #e4dcb7;
-    border: 2px solid black;
-    gap: 3px;
-    padding: 5px;
-    top: -80px;
-    left: -100px;
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  position: absolute;
+  width: 200px;
+  background-color: #e4dcb7;
+  border: 2px solid black;
+  gap: 3px;
+  padding: 5px;
+  top: -80px;
+  left: -100px;
 }
 
 #pin {
-    position: absolute;
-    top: -15px;
-    left: 100px;
+  position: absolute;
+  top: -15px;
+  left: 100px;
 }
 
-#line, #curved-line, #glyph, #circle {
-    width: 100%;
+#line,
+#curved-line,
+#glyph,
+#circle {
+  width: 100%;
 }
 
-#line:hover, #curved-line:hover, #glyph:hover, #circle:hover {
-    background-color: #7e7965;
-    cursor: pointer;
+#line:hover,
+#curved-line:hover,
+#glyph:hover,
+#circle:hover {
+  background-color: #7e7965;
+  cursor: pointer;
+}
+
+.top-choose {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#cross:hover {
+  cursor: pointer;
+  background-color: #7e7965;
 }
