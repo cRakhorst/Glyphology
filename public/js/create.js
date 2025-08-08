@@ -116,32 +116,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const lines = [];
 
-  function isInsideCircle(x, y, cx, cy, r) {
-    const dx = x - cx;
-    const dy = y - cy;
-    return dx * dx + dy * dy <= r * r;
+  function isInsideCircle(x, y, cx, cy, radius = 5) {
+    return Math.hypot(x - cx, y - cy) < radius;
   }
 
-  // Functie om alleen het beginpunt van echte child lijnen te verplaatsen
   function moveLineAndChildren(line, newX, newY) {
-    // Update lijn eindpunt
     line.x2 = newX;
     line.y2 = newY;
-    
-    // Update eventuele cirkel die aan dit eindpunt verbonden is
+
     if (line.attachedCircle) {
       line.attachedCircle.x = newX;
       line.attachedCircle.y = newY;
       updateChildPositions(line.attachedCircle);
     }
-    
-    // Alleen echte child lijnen verplaatsen (die deze lijn als parent hebben)
+
     lines.forEach((childLine) => {
       if (childLine.parentLine === line) {
-        // Alleen het beginpunt van de child lijn verplaatsen
         childLine.x1 = newX;
         childLine.y1 = newY;
-        // Het eindpunt (x2, y2) blijft op zijn plaats!
       }
     });
   }
@@ -152,7 +144,13 @@ document.addEventListener("DOMContentLoaded", function () {
     lines.forEach((line) => {
       ctx.beginPath();
       ctx.moveTo(line.x1, line.y1);
-      ctx.lineTo(line.x2, line.y2);
+
+      if (line.controlX !== undefined && line.controlY !== undefined) {
+        ctx.quadraticCurveTo(line.controlX, line.controlY, line.x2, line.y2);
+      } else {
+        ctx.lineTo(line.x2, line.y2);
+      }
+
       ctx.strokeStyle = "black";
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -161,24 +159,10 @@ document.addEventListener("DOMContentLoaded", function () {
       ctx.arc(line.x2, line.y2, 5, 0, Math.PI * 2);
       ctx.fillStyle = "blue";
       ctx.fill();
-
-      // eindpunten - alleen tonen als er geen cirkel op dat punt staat
-      const hasCircleAtEndpoint = circles.some(
-        (circle) =>
-          Math.abs(circle.x - line.x2) < 1 && Math.abs(circle.y - line.y2) < 1
-      );
-
-      if (!hasCircleAtEndpoint) {
-        ctx.beginPath();
-        ctx.arc(line.x2, line.y2, 5, 0, Math.PI * 2);
-        ctx.fillStyle = "blue";
-        ctx.fill();
-      }
     });
 
     circles.forEach((circle) => {
       if (circle.radius === 0 && !circle.visible && !circle.used) {
-        // Altijd tonen
         ctx.beginPath();
         ctx.arc(circle.x, circle.y, 5, 0, Math.PI * 2);
         ctx.fillStyle = "black";
@@ -220,7 +204,6 @@ document.addEventListener("DOMContentLoaded", function () {
       activeCircle.visible = true;
       activeCircle.radius = 30;
 
-      // Als dit een lijn-eindpunt was, update de lijn positie
       if (activeCircle.isLineEndpoint && activeCircle.connectedLine) {
         activeCircle.connectedLine.x2 = activeCircle.x;
         activeCircle.connectedLine.y2 = activeCircle.y;
@@ -239,17 +222,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    // Lijn-eindpunten checken
     for (const line of lines) {
       if (isInsideCircle(mouseX, mouseY, line.x2, line.y2, 6)) {
-        // Check of er al een cirkel op dit eindpunt staat
         const circleAtEndpoint = circles.find(
           (circle) =>
             Math.abs(circle.x - line.x2) < 5 && Math.abs(circle.y - line.y2) < 5
         );
 
         if (e.shiftKey) {
-          // Altijd slepen mogelijk met shift
           draggingLine = line;
           draggingEndpoint = "end";
 
@@ -259,7 +239,6 @@ document.addEventListener("DOMContentLoaded", function () {
             draggingLine.attachedCircle = null;
           }
         } else if (!circleAtEndpoint) {
-          // Alleen component menu tonen als er nog geen cirkel zit
           const endpointCircle = {
             x: line.x2,
             y: line.y2,
@@ -281,18 +260,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     for (const circle of circles) {
-      if (!circle.visible) continue;
-
-      const handleX = circle.x + circle.radius * Math.cos(HANDLE_ANGLE);
-      const handleY = circle.y + circle.radius * Math.sin(HANDLE_ANGLE);
-
-      if (isInsideCircle(mouseX, mouseY, handleX, handleY, 8)) {
-        circle.draggingHandle = true;
-        return;
-      }
-    }
-
-    for (const circle of circles) {
       if (
         !circle.visible &&
         isInsideCircle(mouseX, mouseY, circle.x, circle.y, 5)
@@ -302,10 +269,15 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector(".choose").style.display = "block";
         return;
       }
-    }
-
-    for (const circle of circles) {
       if (!circle.visible) continue;
+
+      const handleX = circle.x + circle.radius * Math.cos(HANDLE_ANGLE);
+      const handleY = circle.y + circle.radius * Math.sin(HANDLE_ANGLE);
+
+      if (isInsideCircle(mouseX, mouseY, handleX, handleY, 8)) {
+        circle.draggingHandle = true;
+        return;
+      }
 
       for (let i = 0; i < 8; i++) {
         if (circle.usedDots.includes(i)) continue;
@@ -374,9 +346,7 @@ document.addEventListener("DOMContentLoaded", function () {
       draw();
     });
 
-    // HIER WAS HET PROBLEEM - deze code deed niets!
     if (draggingLine && draggingEndpoint === "end") {
-      // Nu roepen we daadwerkelijk de functie aan om de lijn te verplaatsen
       moveLineAndChildren(draggingLine, mouseX, mouseY);
       draw();
     }
@@ -395,17 +365,14 @@ document.addEventListener("DOMContentLoaded", function () {
       let parentLine = null;
 
       if (activeCircle.isLineEndpoint) {
-        // Voor lijn-eindpunten, start vanaf het eindpunt zelf
         startX = activeCircle.x;
         startY = activeCircle.y;
-        angle = 0; // Default richting, kan aangepast worden
-        parentLine = activeCircle.connectedLine; // Deze lijn is de parent
+        angle = 0;
+        parentLine = activeCircle.connectedLine;
       } else {
-        // Voor normale cirkels, gebruik de dot index
         angle = activeDotIndex !== null ? (activeDotIndex * Math.PI) / 4 : 0;
         startX = activeCircle.x + activeCircle.radius * Math.cos(angle);
         startY = activeCircle.y + activeCircle.radius * Math.sin(angle);
-        // parentLine blijft null voor lijnen vanaf cirkels
       }
 
       const length = 30;
@@ -419,8 +386,7 @@ document.addEventListener("DOMContentLoaded", function () {
         y2: endY,
         fromCircle: activeCircle,
         fromDotIndex: activeDotIndex,
-        fromLineEndpoint: activeLineEndpoint,
-        parentLine: parentLine, // Sla de parent lijn op
+        parentLine: parentLine,
         children: [],
       };
 
@@ -443,6 +409,74 @@ document.addEventListener("DOMContentLoaded", function () {
     activeCircle = null;
     activeDotIndex = null;
     selectedOption = null;
+    document.querySelector(".choose").style.display = "none";
+  });
+
+  document.getElementById("curved-line").addEventListener("click", () => {
+    if (!activeCircle) return;
+
+    let angle = 0;
+    let startX, startY;
+    let parentLine = null;
+
+    if (activeCircle.isLineEndpoint) {
+      startX = activeCircle.x;
+      startY = activeCircle.y;
+      angle = 0;
+      parentLine = activeCircle.connectedLine;
+    } else {
+      angle = activeDotIndex !== null ? (activeDotIndex * Math.PI) / 4 : 0;
+      startX = activeCircle.x + activeCircle.radius * Math.cos(angle);
+      startY = activeCircle.y + activeCircle.radius * Math.sin(angle);
+    }
+
+    const lineLength = 30;
+    const endX = startX + lineLength * Math.cos(angle);
+    const endY = startY + lineLength * Math.sin(angle);
+
+    // Curve midden met normale vector
+    const midX = (startX + endX) / 2;
+    const midY = (startY + endY) / 2;
+    const dx = endX - startX;
+    const dy = endY - startY;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    const normX = -dy / length;
+    const normY = dx / length;
+    const curveHeight = 20;
+
+    const controlX = midX + normX * curveHeight;
+    const controlY = midY + normY * curveHeight;
+
+    const newLine = {
+      x1: startX,
+      y1: startY,
+      x2: endX,
+      y2: endY,
+      controlX: controlX,
+      controlY: controlY,
+      fromCircle: activeCircle,
+      fromDotIndex: activeDotIndex,
+      fromLine: parentLine,
+      children: [],
+    };
+
+    if (newLine.fromLine) {
+      newLine.fromLine.children = newLine.fromLine.children || [];
+      newLine.fromLine.children.push(newLine);
+    }
+
+    activeCircle.used = true;
+    if (activeDotIndex !== null) {
+      activeCircle.usedDots.push(activeDotIndex);
+    }
+
+    lines.push(newLine);
+    draw();
+
+    activeCircle = null;
+    activeDotIndex = null;
+    selectedOption = null;
+    activeParentLine = null;
     document.querySelector(".choose").style.display = "none";
   });
 
