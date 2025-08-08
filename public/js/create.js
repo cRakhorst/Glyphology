@@ -122,6 +122,30 @@ document.addEventListener("DOMContentLoaded", function () {
     return dx * dx + dy * dy <= r * r;
   }
 
+  // Functie om alleen het beginpunt van echte child lijnen te verplaatsen
+  function moveLineAndChildren(line, newX, newY) {
+    // Update lijn eindpunt
+    line.x2 = newX;
+    line.y2 = newY;
+    
+    // Update eventuele cirkel die aan dit eindpunt verbonden is
+    if (line.attachedCircle) {
+      line.attachedCircle.x = newX;
+      line.attachedCircle.y = newY;
+      updateChildPositions(line.attachedCircle);
+    }
+    
+    // Alleen echte child lijnen verplaatsen (die deze lijn als parent hebben)
+    lines.forEach((childLine) => {
+      if (childLine.parentLine === line) {
+        // Alleen het beginpunt van de child lijn verplaatsen
+        childLine.x1 = newX;
+        childLine.y1 = newY;
+        // Het eindpunt (x2, y2) blijft op zijn plaats!
+      }
+    });
+  }
+
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -336,50 +360,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function moveLineAndChildren(line, newX, newY) {
-    // Bereken delta t.o.v. oude positie
-    const deltaX = newX - line.x2;
-    const deltaY = newY - line.y2;
-
-    // Verplaats eindpunt van de lijn
-    line.x2 = newX;
-    line.y2 = newY;
-
-    // Indien er een cirkel aan dit eindpunt hangt, verplaats die ook
-    if (line.attachedCircle) {
-      line.attachedCircle.x = newX;
-      line.attachedCircle.y = newY;
-    }
-
-    // Verplaats child lijnen mee met dezelfde delta
-    if (line.children) {
-      line.children.forEach((childLine) => {
-        // Verplaats startpunt child lijn (is eindpunt parent lijn)
-        childLine.x1 += deltaX;
-        childLine.y1 += deltaY;
-
-        // Verplaats ook het eindpunt van de child lijn mee
-        childLine.x2 += deltaX;
-        childLine.y2 += deltaY;
-
-        // Indien child lijn een cirkel heeft aan startpunt, update die
-        if (childLine.fromCircle) {
-          childLine.fromCircle.x = childLine.x1;
-          childLine.fromCircle.y = childLine.y1;
-        }
-
-        // Indien child lijn een cirkel heeft aan eindpunt, update die
-        if (childLine.attachedCircle) {
-          childLine.attachedCircle.x = childLine.x2;
-          childLine.attachedCircle.y = childLine.y2;
-        }
-
-        // Recursief door naar eventuele kleinkinderen
-        moveLineAndChildren(childLine, childLine.x2, childLine.y2);
-      });
-    }
-  }
-
   canvas.addEventListener("mousemove", (e) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
@@ -394,7 +374,9 @@ document.addEventListener("DOMContentLoaded", function () {
       draw();
     });
 
+    // HIER WAS HET PROBLEEM - deze code deed niets!
     if (draggingLine && draggingEndpoint === "end") {
+      // Nu roepen we daadwerkelijk de functie aan om de lijn te verplaatsen
       moveLineAndChildren(draggingLine, mouseX, mouseY);
       draw();
     }
@@ -410,17 +392,20 @@ document.addEventListener("DOMContentLoaded", function () {
     if (activeCircle) {
       let angle = 0;
       let startX, startY;
+      let parentLine = null;
 
       if (activeCircle.isLineEndpoint) {
         // Voor lijn-eindpunten, start vanaf het eindpunt zelf
         startX = activeCircle.x;
         startY = activeCircle.y;
         angle = 0; // Default richting, kan aangepast worden
+        parentLine = activeCircle.connectedLine; // Deze lijn is de parent
       } else {
         // Voor normale cirkels, gebruik de dot index
         angle = activeDotIndex !== null ? (activeDotIndex * Math.PI) / 4 : 0;
         startX = activeCircle.x + activeCircle.radius * Math.cos(angle);
         startY = activeCircle.y + activeCircle.radius * Math.sin(angle);
+        // parentLine blijft null voor lijnen vanaf cirkels
       }
 
       const length = 30;
@@ -435,6 +420,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fromCircle: activeCircle,
         fromDotIndex: activeDotIndex,
         fromLineEndpoint: activeLineEndpoint,
+        parentLine: parentLine, // Sla de parent lijn op
         children: [],
       };
 
