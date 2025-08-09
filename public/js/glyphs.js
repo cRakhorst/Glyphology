@@ -9,9 +9,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }, minutes * 60 * 1000);
   }
 
-  // Navigatie
   document.querySelector(".glyphs").addEventListener("click", function () {
-    window.location.href = "glyphs";
+    // glyphs is create!
+    window.location.href = "create";
   });
 
   document.querySelector(".combos").addEventListener("click", function () {
@@ -20,77 +20,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.getElementById("cross").addEventListener("click", function () {
     document.querySelector(".choose").style.display = "none";
-  });
-
-  // Glyph tekenen
-  const glyphCanvas = document.getElementById("glyph-canvas");
-  if (!glyphCanvas || typeof glyphComponents === "undefined") return;
-
-  const glyphctx = glyphCanvas.getContext("2d");
-  glyphctx.clearRect(0, 0, glyphCanvas.width, glyphCanvas.height);
-
-  glyphComponents.forEach((comp) => {
-    const coords = parseCoords(comp.coordinates);
-    glyphctx.save();
-    glyphctx.strokeStyle = "black";
-    glyphctx.lineWidth = 2;
-
-    switch (comp.type.toLowerCase()) {
-      case "circle":
-        glyphctx.beginPath();
-        glyphctx.arc(coords.x, coords.y, coords.radius || 20, 0, Math.PI * 2);
-        glyphctx.stroke();
-        break;
-      case "triangle":
-        drawTriangle(glyphctx, coords.x, coords.y, coords.size || 40);
-        break;
-      case "line":
-        glyphctx.beginPath();
-        glyphctx.moveTo(coords.x1, coords.y1);
-        glyphctx.lineTo(coords.x2, coords.y2);
-        glyphctx.stroke();
-        break;
-    }
-
-    glyphctx.restore();
-  });
-
-  function parseCoords(coordStr) {
-    const obj = {};
-    const parts = coordStr.split(";");
-    parts.forEach((part) => {
-      const [key, val] = part.split(":").map((p) => p.trim());
-      if (key && val) {
-        const nums = val.match(/-?\d+(\.\d+)?/g);
-        if (!nums) return;
-        if (nums.length === 1) obj[key] = parseFloat(nums[0]);
-        else if (nums.length === 2) {
-          obj[key + "x"] = parseFloat(nums[0]);
-          obj[key + "y"] = parseFloat(nums[1]);
-          obj.x = parseFloat(nums[0]);
-          obj.y = parseFloat(nums[1]);
+    if (activeCircle) {
+      if (activeCircle.isLineEndpoint && !activeCircle.visible) {
+        if (activeCircle.connectedLine) {
+          activeCircle.connectedLine.attachedCircle = null;
         }
+        const idx = circles.indexOf(activeCircle);
+        if (idx > -1) circles.splice(idx, 1);
       }
-    });
-    return obj;
-  }
+      activeCircle = null;
+      activeDotIndex = null;
+      selectedOption = null;
+    }
+  });
 
-  function drawTriangle(glyphctx, x, y, size) {
-    const height = (size * Math.sqrt(3)) / 2;
-    glyphctx.beginPath();
-    glyphctx.moveTo(x, y - height / 2);
-    glyphctx.lineTo(x - size / 2, y + height / 2);
-    glyphctx.lineTo(x + size / 2, y + height / 2);
-    glyphctx.closePath();
-    glyphctx.stroke();
-  }
-
-  // Setup combo canvas
   const canvas = document.getElementById("combo-canvas");
   const rect = canvas.getBoundingClientRect();
   canvas.width = rect.width;
   canvas.height = rect.height;
-  const HANDLE_ANGLE = (-22.5 * Math.PI) / 180;
+  const HANDLE_ANGLE = (-12.25 * Math.PI) / 180;
 
   const ctx = canvas.getContext("2d");
 
@@ -99,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let activeDotIndex = null;
   let draggingLine = null;
   let draggingEndpoint = null;
-  let activeLineEndpoint = null; // Nieuw: voor het bijhouden van het actieve lijn-eindpunt
+  let activeLineEndpoint = null;
 
   const center = { x: canvas.width / 2, y: canvas.height / 2 };
 
@@ -125,15 +73,40 @@ document.addEventListener("DOMContentLoaded", function () {
     line.y2 = newY;
 
     if (line.attachedCircle && line.attachedCircle.parentLine === line) {
-      line.attachedCircle.x = newX;
-      line.attachedCircle.y = newY;
+      // Als de cirkel zichtbaar is, bereken de nieuwe positie op basis van de lijnrichting
+      if (line.attachedCircle.visible && line.attachedCircle.radius > 0) {
+        const dx = line.x2 - line.x1;
+        const dy = line.y2 - line.y1;
+        const length = Math.sqrt(dx * dx + dy * dy);
+        const unitX = dx / length;
+        const unitY = dy / length;
+        
+        // Plaats de cirkel op radius afstand voorbij het lijn-eindpunt
+        line.attachedCircle.x = line.x2 + unitX * line.attachedCircle.radius;
+        line.attachedCircle.y = line.y2 + unitY * line.attachedCircle.radius;
+        
+        // Update het lijn-eindpunt naar de rand van de cirkel
+        line.x2 = line.attachedCircle.x - unitX * line.attachedCircle.radius;
+        line.y2 = line.attachedCircle.y - unitY * line.attachedCircle.radius;
+      } else {
+        // Als de cirkel nog niet zichtbaar is, beweeg gewoon mee
+        line.attachedCircle.x = newX;
+        line.attachedCircle.y = newY;
+      }
+      
       updateChildPositions(line.attachedCircle);
     }
 
     lines.forEach((childLine) => {
       if (childLine.parentLine === line) {
-        childLine.x1 = newX;
-        childLine.y1 = newY;
+        if (line.attachedCircle && line.attachedCircle.visible) {
+          // Als er een zichtbare cirkel is, start de nieuwe lijn vanaf de cirkelrand
+          childLine.x1 = line.x2;
+          childLine.y1 = line.y2;
+        } else {
+          childLine.x1 = newX;
+          childLine.y1 = newY;
+        }
       }
     });
   }
@@ -183,10 +156,8 @@ document.addEventListener("DOMContentLoaded", function () {
         ctx.fillStyle = "blue";
         ctx.fill();
 
-        for (let i = 0; i < 8; i++) {
-          if (circle.usedDots.includes(i)) continue;
-
-          const angle = (i * Math.PI) / 4;
+        for (let i = 0; i < 16; i++) {
+          const angle = (i * Math.PI) / 8;
           const x = circle.x + circle.radius * Math.cos(angle);
           const y = circle.y + circle.radius * Math.sin(angle);
 
@@ -201,12 +172,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.getElementById("circle").addEventListener("click", function () {
     if (activeCircle) {
-      activeCircle.visible = true;
-      activeCircle.radius = 30;
+      // Als het een lijn-eindpunt is en er nog geen cirkel is, maak dan een cirkel
+      if (activeCircle.isLineEndpoint && !activeCircle.visible) {
+        const radius = 30;
+        const dx = activeCircle.connectedLine.x2 - activeCircle.connectedLine.x1;
+        const dy = activeCircle.connectedLine.y2 - activeCircle.connectedLine.y1;
+        const length = Math.sqrt(dx * dx + dy * dy);
+        const unitX = dx / length;
+        const unitY = dy / length;
 
-      if (activeCircle.isLineEndpoint && activeCircle.connectedLine) {
-        activeCircle.connectedLine.x2 = activeCircle.x;
-        activeCircle.connectedLine.y2 = activeCircle.y;
+        // Bepaal middenpunt van cirkel op radius afstand voorbij het lijn-eindpunt
+        const circleX = activeCircle.connectedLine.x2 + unitX * radius;
+        const circleY = activeCircle.connectedLine.y2 + unitY * radius;
+
+        // Update de cirkel eigenschappen
+        activeCircle.x = circleX;
+        activeCircle.y = circleY;
+        activeCircle.radius = radius;
+        activeCircle.visible = true;
+
+        // Verplaats het lijn-eindpunt naar de rand van de cirkel
+        activeCircle.connectedLine.x2 = circleX - unitX * radius;
+        activeCircle.connectedLine.y2 = circleY - unitY * radius;
+      } else if (!activeCircle.visible) {
+        // Normale cirkel maken
+        activeCircle.visible = true;
+        activeCircle.radius = 30;
       }
 
       draw();
@@ -233,12 +224,14 @@ document.addEventListener("DOMContentLoaded", function () {
           draggingLine = line;
           draggingEndpoint = "end";
 
-          if (circleAtEndpoint) {
+          if (circleAtEndpoint && circleAtEndpoint.visible) {
             draggingLine.attachedCircle = circleAtEndpoint;
           } else {
-            draggingLine.attachedCircle = null;
+            // Als er een onzichtbare cirkel is, koppel deze ook
+            draggingLine.attachedCircle = circleAtEndpoint;
           }
         } else if (!circleAtEndpoint) {
+          // Maak alleen een onzichtbare placeholder cirkel en toon het keuzemenu
           const endpointCircle = {
             x: line.x2,
             y: line.y2,
@@ -252,9 +245,11 @@ document.addEventListener("DOMContentLoaded", function () {
           };
 
           circles.push(endpointCircle);
+          line.attachedCircle = endpointCircle;
           activeCircle = endpointCircle;
           activeDotIndex = null;
           document.querySelector(".choose").style.display = "block";
+          draw();
         }
 
         return;
@@ -281,10 +276,8 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      for (let i = 0; i < 8; i++) {
-        if (circle.usedDots.includes(i)) continue;
-
-        const angle = (i * Math.PI) / 4;
+      for (let i = 0; i < 16; i++) {
+        const angle = (i * Math.PI) / 8;
         const dotX = circle.x + circle.radius * Math.cos(angle);
         const dotY = circle.y + circle.radius * Math.sin(angle);
 
@@ -302,7 +295,6 @@ document.addEventListener("DOMContentLoaded", function () {
           circles.push(newCircle);
           activeCircle = newCircle;
           activeDotIndex = i;
-          circle.usedDots.push(i);
           document.querySelector(".choose").style.display = "block";
           draw();
           return;
@@ -314,7 +306,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function updateChildPositions(parentCircle) {
     circles.forEach((child) => {
       if (child.parent === parentCircle) {
-        const angle = (child.dotIndex * Math.PI) / 4;
+        const angle = (child.dotIndex * Math.PI) / 8;
         child.x = parentCircle.x + parentCircle.radius * Math.cos(angle);
         child.y = parentCircle.y + parentCircle.radius * Math.sin(angle);
 
@@ -323,7 +315,7 @@ document.addEventListener("DOMContentLoaded", function () {
             line.fromCircle === child &&
             line.fromDotIndex === child.dotIndex
           ) {
-            const angle = (child.dotIndex * Math.PI) / 4;
+            const angle = (child.dotIndex * Math.PI) / 8;
             line.x1 = child.x + child.radius * Math.cos(angle);
             line.y1 = child.y + child.radius * Math.sin(angle);
           }
@@ -349,6 +341,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     if (draggingLine && draggingEndpoint === "end") {
+      // Update de lijn positie en alle gekoppelde elementen
       moveLineAndChildren(draggingLine, mouseX, mouseY);
       draw();
     }
@@ -372,7 +365,7 @@ document.addEventListener("DOMContentLoaded", function () {
         angle = 0;
         parentLine = activeCircle.connectedLine;
       } else {
-        angle = activeDotIndex !== null ? (activeDotIndex * Math.PI) / 4 : 0;
+        angle = activeDotIndex !== null ? (activeDotIndex * Math.PI) / 8 : 0;
         startX = activeCircle.x + activeCircle.radius * Math.cos(angle);
         startY = activeCircle.y + activeCircle.radius * Math.sin(angle);
       }
@@ -401,9 +394,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       lines.push(newLine);
       activeCircle.used = true;
-      if (activeDotIndex !== null) {
-        activeCircle.usedDots.push(activeDotIndex);
-      }
 
       draw();
     }
@@ -427,7 +417,7 @@ document.addEventListener("DOMContentLoaded", function () {
       angle = 0;
       parentLine = activeCircle.connectedLine;
     } else {
-      angle = activeDotIndex !== null ? (activeDotIndex * Math.PI) / 4 : 0;
+      angle = activeDotIndex !== null ? (activeDotIndex * Math.PI) / 8 : 0;
       startX = activeCircle.x + activeCircle.radius * Math.cos(angle);
       startY = activeCircle.y + activeCircle.radius * Math.sin(angle);
     }
@@ -483,4 +473,24 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   draw();
+
+  document.getElementById("title").addEventListener("input", function () {
+    if (this.value.length >= 30) {
+      this.value = this.value.slice(0, 30);
+    }
+    document.getElementById(
+      "characters"
+    ).textContent = `${this.value.length}/30`;
+  });
+
+  document
+    .getElementById("description-custom")
+    .addEventListener("input", function () {
+      if (this.value.length >= 150) {
+        this.value = this.value.slice(0, 150);
+      }
+      document.getElementById(
+        "characters-description"
+      ).textContent = `${this.value.length}/150`;
+    });
 });

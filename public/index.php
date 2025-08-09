@@ -14,6 +14,7 @@ $routes = [
  '404' => '404.php',
  'login' => 'login.php',
  'create' => 'create.php',
+ 'glyphs' => 'glyphs.php',
 ];
 
 $db = new Database();
