@@ -213,6 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
+    // Check EERST voor lijn-eindpunten (blauwe stippen hebben hoogste prioriteit)
     for (const line of lines) {
       if (isInsideCircle(mouseX, mouseY, line.x2, line.y2, 6)) {
         const circleAtEndpoint = circles.find(
@@ -224,10 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
           draggingLine = line;
           draggingEndpoint = "end";
 
-          if (circleAtEndpoint && circleAtEndpoint.visible) {
-            draggingLine.attachedCircle = circleAtEndpoint;
-          } else {
-            // Als er een onzichtbare cirkel is, koppel deze ook
+          if (circleAtEndpoint) {
             draggingLine.attachedCircle = circleAtEndpoint;
           }
         } else if (!circleAtEndpoint) {
@@ -256,16 +254,8 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
+    // Dan check voor zichtbare cirkels (handvat en dots)
     for (const circle of circles) {
-      if (
-        !circle.visible &&
-        isInsideCircle(mouseX, mouseY, circle.x, circle.y, 5)
-      ) {
-        activeCircle = circle;
-        activeDotIndex = null;
-        document.querySelector(".choose").style.display = "block";
-        return;
-      }
       if (!circle.visible) continue;
 
       const handleX = circle.x + circle.radius * Math.cos(HANDLE_ANGLE);
@@ -299,6 +289,30 @@ document.addEventListener("DOMContentLoaded", function () {
           draw();
           return;
         }
+      }
+
+      // Check of we de cirkel zelf willen verslepen bij Shift+klik
+      if (e.shiftKey && isInsideCircle(mouseX, mouseY, circle.x, circle.y, circle.radius)) {
+        // Zoek de parent line van deze cirkel
+        const parentLine = lines.find(line => line.attachedCircle === circle);
+        if (parentLine) {
+          draggingLine = parentLine;
+          draggingEndpoint = "end";
+        }
+        return;
+      }
+    }
+
+    // Als laatste check voor onzichtbare cirkels (zwarte stipjes)
+    for (const circle of circles) {
+      if (
+        !circle.visible &&
+        isInsideCircle(mouseX, mouseY, circle.x, circle.y, 5)
+      ) {
+        activeCircle = circle;
+        activeDotIndex = null;
+        document.querySelector(".choose").style.display = "block";
+        return;
       }
     }
   });
