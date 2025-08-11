@@ -515,6 +515,45 @@ body {
   left: calc(100% - 105px);
 }
 
+.done-creating {
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: #e4dcb7;
+  top: 280px;
+  right: 360px;
+  padding: 5px;
+  gap: 5px;
+}
+
+#pin-creating {
+  position: absolute;
+  right: 40px;
+  top: -20px;
+  width: fit-content;
+  height: fit-content;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-around;
+}
+
+.buttons button {
+  padding: 0px 5px;
+  font-size: 16px;
+  color: black;
+  background-color: #B795E1;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.buttons button:hover {
+  cursor: pointer;
+}
+
 /* CSS for the glyphs and combos */
 
 #combo-canvas {

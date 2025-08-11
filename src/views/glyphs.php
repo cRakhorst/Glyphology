@@ -120,6 +120,14 @@
                         <div class="line-1"></div>
                         <div class="line-2"></div>
                     </div>
+                    <div class="done-creating">
+                        <img src="/assets/pictures/pin.png" id="pin-creating" alt="pin">
+                        <p id="done-text">Are you done creating?</p>
+                        <div class="buttons">
+                            <button id="done">Yes!</button>
+                            <button id="not-done">Keep thinking</button>
+                        </div>
+                    </div>
                     <div class="footer">
                         <div class="top">
                             <p id="header-text">Description: </p>

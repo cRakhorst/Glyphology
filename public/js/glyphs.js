@@ -9,13 +9,35 @@ document.addEventListener("DOMContentLoaded", function () {
     }, minutes * 60 * 1000);
   }
 
+  const errorMessage = document.getElementById("error-message");
+  function removeErrorMessage() {
+    errorMessage.style.display = "flex";
+    document.querySelector(".done-creating").style.display = "none";
+    setTimeout(() => {
+      errorMessage.style.display = "none";
+    }, 5000);
+  }
+
   document.querySelector(".glyphs").addEventListener("click", function () {
-    // glyphs is create!
     window.location.href = "create";
   });
 
   document.querySelector(".combos").addEventListener("click", function () {
     window.location.href = "combos";
+  });
+
+  document
+    .querySelector(".forward-arrow")
+    .addEventListener("click", function () {
+      document.querySelector(".done-creating").style.display = "flex";
+    });
+
+  document.getElementById("done").addEventListener("click", function () {
+    saveGlyph();
+  });
+
+  document.getElementById("not-done").addEventListener("click", function () {
+    document.querySelector(".done-creating").style.display = "none";
   });
 
   document.getElementById("cross").addEventListener("click", function () {
@@ -80,11 +102,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const length = Math.sqrt(dx * dx + dy * dy);
         const unitX = dx / length;
         const unitY = dy / length;
-        
+
         // Plaats de cirkel op radius afstand voorbij het lijn-eindpunt
         line.attachedCircle.x = line.x2 + unitX * line.attachedCircle.radius;
         line.attachedCircle.y = line.y2 + unitY * line.attachedCircle.radius;
-        
+
         // Update het lijn-eindpunt naar de rand van de cirkel
         line.x2 = line.attachedCircle.x - unitX * line.attachedCircle.radius;
         line.y2 = line.attachedCircle.y - unitY * line.attachedCircle.radius;
@@ -93,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
         line.attachedCircle.x = newX;
         line.attachedCircle.y = newY;
       }
-      
+
       updateChildPositions(line.attachedCircle);
     }
 
@@ -175,8 +197,10 @@ document.addEventListener("DOMContentLoaded", function () {
       // Als het een lijn-eindpunt is en er nog geen cirkel is, maak dan een cirkel
       if (activeCircle.isLineEndpoint && !activeCircle.visible) {
         const radius = 30;
-        const dx = activeCircle.connectedLine.x2 - activeCircle.connectedLine.x1;
-        const dy = activeCircle.connectedLine.y2 - activeCircle.connectedLine.y1;
+        const dx =
+          activeCircle.connectedLine.x2 - activeCircle.connectedLine.x1;
+        const dy =
+          activeCircle.connectedLine.y2 - activeCircle.connectedLine.y1;
         const length = Math.sqrt(dx * dx + dy * dy);
         const unitX = dx / length;
         const unitY = dy / length;
@@ -292,9 +316,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // Check of we de cirkel zelf willen verslepen bij Shift+klik
-      if (e.shiftKey && isInsideCircle(mouseX, mouseY, circle.x, circle.y, circle.radius)) {
+      if (
+        e.shiftKey &&
+        isInsideCircle(mouseX, mouseY, circle.x, circle.y, circle.radius)
+      ) {
         // Zoek de parent line van deze cirkel
-        const parentLine = lines.find(line => line.attachedCircle === circle);
+        const parentLine = lines.find((line) => line.attachedCircle === circle);
         if (parentLine) {
           draggingLine = parentLine;
           draggingEndpoint = "end";
@@ -507,4 +534,153 @@ document.addEventListener("DOMContentLoaded", function () {
         "characters-description"
       ).textContent = `${this.value.length}/150`;
     });
+
+  // functions for updating database
+
+  function serializeCanvasData() {
+    const components = [];
+    let componentId = 1;
+
+    // Serialiseer alle cirkels
+    circles.forEach((circle, index) => {
+      if (circle.visible || circle.used) {
+        components.push({
+          component_id: componentId++,
+          type: "circle",
+          size: circle.radius.toString(),
+          coordinates: `${circle.x},${circle.y}`,
+        });
+      }
+    });
+
+    // Serialiseer alle lijnen
+    lines.forEach((line, index) => {
+      const lineType =
+        line.controlX !== undefined && line.controlY !== undefined
+          ? "curved_line"
+          : "straight_line";
+      let coordinates;
+
+      if (lineType === "curved_line") {
+        coordinates = `${line.x1},${line.y1},${line.x2},${line.y2},${line.controlX},${line.controlY}`;
+      } else {
+        coordinates = `${line.x1},${line.y1},${line.x2},${line.y2}`;
+      }
+
+      components.push({
+        component_id: componentId++,
+        type: lineType,
+        size: "2", // line width
+        coordinates: coordinates,
+      });
+    });
+
+    return components;
+  }
+
+  async function saveGlyph() {
+    const title = document.getElementById("title").value.trim();
+    const description = document
+      .getElementById("description-custom")
+      .value.trim();
+
+    // Validatie
+    if (!title) {
+      errorMessage.textContent = "Please enter a title";
+      removeErrorMessage();
+      return;
+    }
+
+    if (!description) {
+      errorMessage.textContent = "Please enter a description";
+      removeErrorMessage();
+      return;
+    }
+
+    // Check of er daadwerkelijk content is om op te slaan
+    const hasVisibleContent =
+      circles.some((circle) => circle.visible || circle.used) ||
+      lines.length > 0;
+    if (!hasVisibleContent) {
+      errorMessage.textContent = "please draw something before you upload it";
+      removeErrorMessage();
+      return;
+    }
+
+    // Serialiseer canvas data
+    const components = serializeCanvasData();
+
+    if (components.length === 0) {
+      errorMessage.textContent = "There is no content to save";
+      removeErrorMessage();
+      return;
+    }
+
+    // Prepareer data voor verzending
+    const glyphData = {
+      title: title,
+      description: description,
+      components: components,
+    };
+
+    try {
+      // Verstuur naar server
+      const response = await fetch("save_glyph.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(glyphData),
+      });
+
+      const result = await response.json();
+      console.log(result);
+
+      if (result.success) {
+        alert("Glyph succesvol opgeslagen!");
+        // Optioneel: redirect naar overzichtspagina of reset canvas
+        // window.location.href = "glyphs";
+
+        // Of reset het canvas voor een nieuwe creatie
+        resetCanvas();
+      } else {
+        alert("Fout bij opslaan: " + (result.error || "Onbekende fout"));
+      }
+    } catch (error) {
+      console.error("Error saving glyph:", error);
+    }
+  }
+
+  function resetCanvas() {
+    circles.length = 0;
+    lines.length = 0;
+
+    // Reset naar beginpositie met één centrum cirkel
+    circles.push({
+      x: center.x,
+      y: center.y,
+      radius: 0,
+      draggingHandle: false,
+      visible: false,
+      usedDots: [],
+    });
+
+    // Reset form velden
+    document.getElementById("title").value = "";
+    document.getElementById("description-custom").value = "";
+    document.getElementById("characters").textContent = "0/30";
+    document.getElementById("characters-description").textContent = "0/150";
+
+    // Verberg menu's
+    document.querySelector(".done-creating").style.display = "none";
+    document.querySelector(".choose").style.display = "none";
+
+    // Reset actieve elementen
+    activeCircle = null;
+    activeDotIndex = null;
+    selectedOption = null;
+
+    // Herteken canvas
+    draw();
+  }
 });

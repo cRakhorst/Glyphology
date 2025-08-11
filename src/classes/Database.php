@@ -122,4 +122,102 @@ class Database
         const glyphComponents = " . json_encode($components) . ";
     </script>";
     }
+
+    public static function saveCustomGlyph($title, $description, $components, $userId)
+    {
+        // Validatie
+        if (empty($title) || empty($description) || empty($components) || empty($userId)) {
+            return ["success" => false, "message" => "Missing required fields"];
+        }
+
+        if (strlen($title) > 255 || strlen($description) > 255) {
+            return ["success" => false, "message" => "Title or description too long"];
+        }
+
+        if (!is_array($components) || count($components) === 0) {
+            return ["success" => false, "message" => "No components to save"];
+        }
+
+        try {
+            $conn = self::connect();
+            $conn->beginTransaction();
+
+            // 1. Sla custom glyph op
+            $stmt = $conn->prepare("INSERT INTO glyph_custom (title, description, glyph_users_user_id) VALUES (?, ?, ?)");
+            $stmt->execute([$title, $description, $userId]);
+            $glyph_id = $conn->lastInsertId();
+
+            // 2. Sla componenten op
+            $component_ids = [];
+            foreach ($components as $component) {
+                // Valideer component data
+                if (!isset($component['type']) || !isset($component['size']) || !isset($component['coordinates'])) {
+                    throw new Exception('Invalid component data');
+                }
+
+                $stmt = $conn->prepare("INSERT INTO glyph_components (type, size, coordinates) VALUES (?, ?, ?)");
+                $stmt->execute([$component['type'], $component['size'], $component['coordinates']]);
+                $component_ids[] = $conn->lastInsertId();
+            }
+
+            // 3. Koppel componenten aan glyph
+            $stmt = $conn->prepare("INSERT INTO glyph_custom_has_components (glyph_custom_glyph_id, glyph_components_component_id) VALUES (?, ?)");
+            foreach ($component_ids as $component_id) {
+                $stmt->execute([$glyph_id, $component_id]);
+            }
+
+            $conn->commit();
+
+            return [
+                'success' => true,
+                'glyph_id' => $glyph_id,
+                'message' => 'Glyph successfully saved'
+            ];
+        } catch (Exception $e) {
+            $conn->rollBack();
+            error_log("Glyph save error: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Database error while saving: ' . $e->getMessage()];
+        }
+    }
+
+    public static function getCustomGlyphsByUser($userId)
+    {
+        try {
+            $conn = self::connect();
+            $stmt = $conn->prepare("SELECT * FROM glyph_custom WHERE glyph_users_user_id = ? ORDER BY glyph_id DESC");
+            $stmt->execute([$userId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    public static function getCustomGlyphById($glyphId)
+    {
+        try {
+            $conn = self::connect();
+            $stmt = $conn->prepare("SELECT * FROM glyph_custom WHERE glyph_id = ?");
+            $stmt->execute([$glyphId]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+
+    public static function getGlyphComponents($glyphId)
+    {
+        try {
+            $conn = self::connect();
+            $stmt = $conn->prepare("SELECT gc.component_id, gc.type, gc.size, gc.coordinates
+                FROM glyph_custom_has_components gchc
+                JOIN glyph_components gc ON gc.component_id = gchc.glyph_components_component_id
+                WHERE gchc.glyph_custom_glyph_id = ?
+                ORDER BY gc.component_id
+            ");
+            $stmt->execute([$glyphId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
 }
