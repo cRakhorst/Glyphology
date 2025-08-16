@@ -535,50 +535,10 @@ document.addEventListener("DOMContentLoaded", function () {
       ).textContent = `${this.value.length}/150`;
     });
 
-  // functions for updating database
+  // functions for saving glyphs
 
-  function serializeCanvasData() {
-    const components = [];
-    let componentId = 1;
-
-    // Serialiseer alle cirkels
-    circles.forEach((circle, index) => {
-      if (circle.visible || circle.used) {
-        components.push({
-          component_id: componentId++,
-          type: "circle",
-          size: circle.radius.toString(),
-          coordinates: `${circle.x},${circle.y}`,
-        });
-      }
-    });
-
-    // Serialiseer alle lijnen
-    lines.forEach((line, index) => {
-      const lineType =
-        line.controlX !== undefined && line.controlY !== undefined
-          ? "curved_line"
-          : "straight_line";
-      let coordinates;
-
-      if (lineType === "curved_line") {
-        coordinates = `${line.x1},${line.y1},${line.x2},${line.y2},${line.controlX},${line.controlY}`;
-      } else {
-        coordinates = `${line.x1},${line.y1},${line.x2},${line.y2}`;
-      }
-
-      components.push({
-        component_id: componentId++,
-        type: lineType,
-        size: "2", // line width
-        coordinates: coordinates,
-      });
-    });
-
-    return components;
-  }
-
-  async function saveGlyph() {
+  function saveGlyph() {
+    // Haal titel en beschrijving op
     const title = document.getElementById("title").value.trim();
     const description = document
       .getElementById("description-custom")
@@ -586,101 +546,128 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Validatie
     if (!title) {
-      errorMessage.textContent = "Please enter a title";
       removeErrorMessage();
+      document.getElementById("error-message").textContent =
+        "Titel is verplicht";
       return;
     }
 
     if (!description) {
-      errorMessage.textContent = "Please enter a description";
       removeErrorMessage();
+      document.getElementById("error-message").textContent =
+        "Beschrijving is verplicht";
       return;
     }
 
-    // Check of er daadwerkelijk content is om op te slaan
-    const hasVisibleContent =
-      circles.some((circle) => circle.visible || circle.used) ||
-      lines.length > 0;
-    if (!hasVisibleContent) {
-      errorMessage.textContent = "please draw something before you upload it";
-      removeErrorMessage();
-      return;
-    }
+    // Verzamel alle componenten (cirkels en lijnen)
+    const components = [];
 
-    // Serialiseer canvas data
-    const components = serializeCanvasData();
+    // Voeg zichtbare cirkels toe
+    circles.forEach((circle, index) => {
+      if (circle.visible && circle.radius > 0) {
+        components.push({
+          type: "circle",
+          size: circle.radius.toString(),
+          coordinates: `${circle.x},${circle.y}`,
+        });
+      }
+    });
 
+    // Voeg lijnen toe
+    lines.forEach((line, index) => {
+      if (line.controlX !== undefined && line.controlY !== undefined) {
+        // Gebogen lijn
+        components.push({
+          type: "curved_line",
+          size: "0", // Voor lijnen gebruiken we size niet echt
+          coordinates: `${line.x1},${line.y1},${line.x2},${line.y2},${line.controlX},${line.controlY}`,
+        });
+      } else {
+        // Rechte lijn
+        components.push({
+          type: "line",
+          size: "0",
+          coordinates: `${line.x1},${line.y1},${line.x2},${line.y2}`,
+        });
+      }
+    });
+
+    // Check of er componenten zijn
     if (components.length === 0) {
-      errorMessage.textContent = "There is no content to save";
       removeErrorMessage();
+      document.getElementById("error-message").textContent =
+        "Geen componenten om op te slaan";
       return;
     }
 
-    // Prepareer data voor verzending
-    const glyphData = {
+    // Verstuur naar server
+    const data = {
       title: title,
       description: description,
       components: components,
+      // Remove user_id from here - let PHP handle it from session
     };
 
-    try {
-      // Verstuur naar server
-      const response = await fetch("save_glyph.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(glyphData),
+    console.log("Sending data:", data); // Debug log
+
+    fetch("api/save_glyph", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      credentials: "same-origin", // Important: Include cookies/session
+    })
+      .then((response) => {
+        console.log("Response status:", response.status); // Debug log
+        return response.json();
+      })
+      .then((result) => {
+        console.log("Response data:", result); // Debug log
+
+        if (result.success) {
+          // Succes - verberg dialoog en reset canvas
+          document.querySelector(".done-creating").style.display = "none";
+
+          // Optioneel: reset de canvas
+          circles.length = 1; // Behoud alleen de eerste cirkel
+          circles[0] = {
+            x: center.x,
+            y: center.y,
+            radius: 0,
+            draggingHandle: false,
+            visible: false,
+            usedDots: [],
+          };
+          lines.length = 0;
+
+          // Reset input velden
+          document.getElementById("title").value = "";
+          document.getElementById("description-custom").value = "";
+          document.getElementById("characters").textContent = "0/30";
+          document.getElementById("characters-description").textContent =
+            "0/150";
+
+          draw();
+
+          // Toon succesbericht
+          alert("Glyph succesvol opgeslagen!");
+        } else {
+          removeErrorMessage();
+          document.getElementById("error-message").textContent =
+            result.message || "Er is een fout opgetreden";
+
+          // Log debug info if available
+          if (result.debug) {
+            console.error("Debug info:", result.debug);
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error saving glyph:", error);
+        removeErrorMessage();
+        document.getElementById("error-message").textContent =
+          "Netwerkfout bij opslaan";
       });
-
-      const result = await response.json();
-      console.log(result);
-
-      if (result.success) {
-        alert("Glyph succesvol opgeslagen!");
-        // Optioneel: redirect naar overzichtspagina of reset canvas
-        // window.location.href = "glyphs";
-
-        // Of reset het canvas voor een nieuwe creatie
-        resetCanvas();
-      } else {
-        alert("Fout bij opslaan: " + (result.error || "Onbekende fout"));
-      }
-    } catch (error) {
-      console.error("Error saving glyph:", error);
-    }
-  }
-
-  function resetCanvas() {
-    circles.length = 0;
-    lines.length = 0;
-
-    // Reset naar beginpositie met één centrum cirkel
-    circles.push({
-      x: center.x,
-      y: center.y,
-      radius: 0,
-      draggingHandle: false,
-      visible: false,
-      usedDots: [],
-    });
-
-    // Reset form velden
-    document.getElementById("title").value = "";
-    document.getElementById("description-custom").value = "";
-    document.getElementById("characters").textContent = "0/30";
-    document.getElementById("characters-description").textContent = "0/150";
-
-    // Verberg menu's
-    document.querySelector(".done-creating").style.display = "none";
-    document.querySelector(".choose").style.display = "none";
-
-    // Reset actieve elementen
-    activeCircle = null;
-    activeDotIndex = null;
-    selectedOption = null;
-
-    // Herteken canvas
-    draw();
   }
 });

@@ -43,6 +43,8 @@ class Database
             $stmt = $conn->prepare("INSERT INTO glyph_users (username, password) VALUES (?, ?)");
             $stmt->execute([$username, $hashedPassword]);
 
+            $_SESSION['user_id'] = $conn->lastInsertId();
+
             return ["success" => true, "message" => "Registration successful"];
         } catch (PDOException $e) {
             return ["success" => false, "message" => "Registration failed: " . $e->getMessage()];
@@ -64,6 +66,8 @@ class Database
             if (!$user || !password_verify($password, $user['password'])) {
                 return ["success" => false, "message" => "Invalid username or password"];
             }
+
+            $_SESSION['user_id'] = $user['user_id'];
 
             return ["success" => true, "user_id" => $user['user_id']];
         } catch (PDOException $e) {

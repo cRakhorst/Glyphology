@@ -2,9 +2,9 @@
 RewriteEngine On
 
 # Route voor API endpoints
-RewriteRule ^api/register$ api/register.php [L]
-RewriteRule ^api/login$ api/login.php [L]
-RewriteRule ^api/save_glyph$ api/save_glyph.php [L]
+RewriteRule ^api/login$ api/login.php [L,NC]
+RewriteRule ^api/register$ api/register.php [L,NC]
+RewriteRule ^api/save_glyph$ api/save_glyph.php [L,NC]
 
 # Sta toegang toe tot bestaande bestanden en mappen
 RewriteCond %{REQUEST_FILENAME} -f [OR]
