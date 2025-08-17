@@ -1,2 +1,1 @@
 the user still doesn't have full control over the curved line
-save glyph api can't see if the user is logged in with: !isset($_SESSION['user_id'])

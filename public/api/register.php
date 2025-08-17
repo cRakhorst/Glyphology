@@ -2,6 +2,10 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once __DIR__ . '/../../src/classes/autoloader.php';
 
 header('Content-Type: application/json');
@@ -23,7 +27,6 @@ try {
 
     $result = Database::register($username, $password, $confirm_password);
     echo json_encode($result);
-    
 } catch (Exception $e) {
     echo json_encode([
         'success' => false,
