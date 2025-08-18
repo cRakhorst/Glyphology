@@ -13,12 +13,11 @@ $logDir = realpath(__DIR__ . '/../../logs');
 if ($logDir && is_dir($logDir) && is_writable($logDir)) {
     ini_set('error_log', $logDir . '/register.log');
 }
-error_log("Method: " . $_SERVER['REQUEST_METHOD']);
-error_log("Request URI: " . $_SERVER['REQUEST_URI']);
-error_log("Redirect status: " . ($_SERVER['REDIRECT_STATUS'] ?? 'none'));
+
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new Exception('Invalid request method');
+        error_log("Invalid request method: " . $_SERVER['REQUEST_METHOD']);
     }
 
     $username = $_POST['username'] ?? '';
@@ -32,4 +31,5 @@ try {
         'success' => false,
         'message' => $e->getMessage()
     ]);
+    error_log("Error: " . $e->getMessage());
 }

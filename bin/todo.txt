@@ -1,0 +1,3 @@
+log every error
+make is when you upload a glyph (or combo) that you automatically get sent to your creation
+make a discord server

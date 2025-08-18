@@ -66,25 +66,17 @@
                         <?php
                         $combo = $db->getCustomComboById(1); // Assuming 1 is the combo ID
                         echo "<h1 id='glyph-title'>" . htmlspecialchars($combo['title']) . "</h1>"; ?>
-                        <p id="inventor">Created by: <?php
-                                                        $db->getUserById(12); // Assuming 12 is the user ID for the creator
-                                                        echo htmlspecialchars($db->getUserById(12)['username'] ?? 'Unknown User');
-                                                        ?></p>
+                        <p id="inventor">Created by: 
                     </div>
                     <div class="back-arrow">
                         <div class="line-1"></div>
                         <div class="line-2"></div>
                     </div>
                     <div class="content">
-                        <?php
-                        $db->showGlyphComboComponents(1); // Assuming 1 is the combo ID
-                        ?>
                     </div>
                     <div class="footer">
                         <p id="info">Description:</p>
-                        <p id="description"><?php
-                                            echo htmlspecialchars($combo['description'] ?? 'No description available.');
-                                            ?></p>
+                        <p id="description">
                     </div>
                 </div>
                 <div class="rings">

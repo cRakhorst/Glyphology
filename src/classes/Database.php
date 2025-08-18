@@ -121,7 +121,6 @@ class Database
 
         echo "<canvas id='glyph-canvas' width='300' height='300'></canvas>";
 
-        // Geef JSON data mee aan JS
         echo "<script>
         const glyphComponents = " . json_encode($components) . ";
     </script>";
@@ -129,7 +128,6 @@ class Database
 
     public static function saveCustomGlyph($title, $description, $components, $userId)
     {
-        // Zet logging naar logs/save_glyph.log
         $logDir = realpath(__DIR__ . '/../../logs');
         if ($logDir && is_dir($logDir) && is_writable($logDir)) {
             ini_set('error_log', $logDir . '/save_glyph.log');
@@ -142,14 +140,14 @@ class Database
             error_log("=== SaveCustomGlyph START ===");
             error_log("UserID: $userId | Title: $title | Description: $description");
 
-            // 1. Controleer of userId geldig is
+            // step 1 - Validate userId
             $stmt = $conn->prepare("SELECT COUNT(*) FROM glyph_users WHERE user_id = ?");
             $stmt->execute([$userId]);
             if ($stmt->fetchColumn() == 0) {
                 throw new Exception("Invalid userId: $userId (not found in glyph_users)");
             }
 
-            // 2. Sla custom glyph op
+            // step 2 - Insert glyph_custom
             $stmt = $conn->prepare("
             INSERT INTO glyph_custom (title, description, glyph_users_user_id) 
             VALUES (?, ?, ?)
@@ -162,7 +160,7 @@ class Database
             }
             error_log("Inserted glyph_custom: glyph_id=$glyph_id");
 
-            // 3. Sla componenten op
+            // step 3 - Insert components
             $component_ids = [];
             foreach ($components as $component) {
                 if (!isset($component['type'], $component['size'], $component['coordinates'])) {
@@ -188,7 +186,7 @@ class Database
                 error_log("Inserted glyph_component: id=$cid | type={$component['type']} | size={$component['size']} | coords={$component['coordinates']}");
             }
 
-            // 4. Koppel componenten aan glyph
+            // step 4 - Link glyph_custom to glyph_components
             foreach ($component_ids as $cid) {
                 error_log("Linking glyph_id=$glyph_id to component_id=$cid");
 

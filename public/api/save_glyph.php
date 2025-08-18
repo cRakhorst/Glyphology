@@ -85,56 +85,62 @@ if (!isset($data['title']) || !isset($data['description']) || !isset($data['comp
     exit;
 }
 
-// Gebruik de user_id uit de sessie (veiliger dan uit de request)
+// get user ID from session
 $userId = $_SESSION['user_id'];
 $title = trim($data['title']);
 $description = trim($data['description']);
 $components = $data['components'];
 
-// Extra validatie
+// Extra validation
 if (empty($title) || empty($description)) {
-    echo json_encode(['success' => false, 'message' => 'Titel en beschrijving zijn verplicht']);
+    echo json_encode(['success' => false, 'message' => 'Title and description are necessary']);
+    error_log("Title or description is empty: title='$title', description='$description'");
     exit;
 }
 
 if (strlen($title) > 30) {
-    echo json_encode(['success' => false, 'message' => 'Titel mag maximaal 30 karakters zijn']);
+    echo json_encode(['success' => false, 'message' => 'Title cannot exceed 30 characters']);
+    error_log("Title exceeds 30 characters: '$title'");
     exit;
 }
 
 if (strlen($description) > 150) {
-    echo json_encode(['success' => false, 'message' => 'Beschrijving mag maximaal 150 karakters zijn']);
+    echo json_encode(['success' => false, 'message' => 'Description cannot exceed 150 characters']);
+    error_log("Description exceeds 150 characters: '$description'");
     exit;
 }
 
 if (!is_array($components) || count($components) === 0) {
-    echo json_encode(['success' => false, 'message' => 'Geen componenten om op te slaan']);
+    echo json_encode(['success' => false, 'message' => 'No components provided']);
+    error_log("No components provided or components is not an array");
     exit;
 }
 
-// Valideer elk component
+// validate every component
 foreach ($components as $component) {
     if (!isset($component['type']) || !isset($component['size']) || !isset($component['coordinates'])) {
-        echo json_encode(['success' => false, 'message' => 'Ongeldig component formaat']);
+        echo json_encode(['success' => false, 'message' => 'invalid component structure']);
+        error_log("Invalid component structure: " . json_encode($component));
         exit;
     }
 
     // Valideer component types
     $allowedTypes = ['circle', 'line', 'curved_line'];
     if (!in_array($component['type'], $allowedTypes)) {
-        echo json_encode(['success' => false, 'message' => 'Ongeldig component type']);
+        echo json_encode(['success' => false, 'message' => 'Invalid component type: ' . $component['type']]);
+        error_log("Invalid component type: " . $component['type']);
         exit;
     }
 }
 
-// Probeer op te slaan via Database klasse
+// try to save the glyph using the Database class
 try {
     $result = Database::saveCustomGlyph($title, $description, $components, $userId);
 
     if ($result['success']) {
         echo json_encode([
             'success' => true,
-            'message' => 'Glyph succesvol opgeslagen',
+            'message' => 'Glyph successfully saved',
             'glyph_id' => $result['glyph_id']
         ]);
     } else {
@@ -142,5 +148,5 @@ try {
     }
 } catch (Exception $e) {
     error_log("Save glyph error: " . $e->getMessage());
-    echo json_encode(['success' => false, 'message' => 'Er is een fout opgetreden bij het opslaan']);
+    echo json_encode(['success' => false, 'message' => 'Unexpected error occurred while saving glyph', 'debug' => $e->getMessage()]);
 }
