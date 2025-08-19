@@ -161,9 +161,404 @@ document.addEventListener("DOMContentLoaded", function () {
       draw();
     });
 
+  let eraserMode = false;
+  let hoveredElement = null;
+
+  // Update the eraser event listener
   document.getElementById("eraser").addEventListener("click", function () {
-    
+    eraserMode = !eraserMode;
+
+    // Update eraser button appearance to show active state
+    const eraserButton = document.getElementById("eraser");
+    if (eraserMode) {
+      eraserButton.style.backgroundColor = "#ff4444";
+      eraserButton.style.color = "white";
+      canvas.style.cursor = "crosshair";
+    } else {
+      eraserButton.style.backgroundColor = "";
+      eraserButton.style.color = "";
+      canvas.style.cursor = "default";
+    }
+
+    // Clear any hover state when toggling eraser
+    hoveredElement = null;
+    draw();
   });
+
+  // == FUNCTIONS TO DELTE A COMPONENT ==
+  function isNearLine(mouseX, mouseY, x1, y1, x2, y2, threshold = 8) {
+    const A = mouseX - x1;
+    const B = mouseY - y1;
+    const C = x2 - x1;
+    const D = y2 - y1;
+
+    const dot = A * C + B * D;
+    const lenSq = C * C + D * D;
+
+    if (lenSq === 0) return Math.hypot(A, B) <= threshold;
+
+    let param = dot / lenSq;
+    param = Math.max(0, Math.min(1, param));
+
+    const xx = x1 + param * C;
+    const yy = y1 + param * D;
+
+    return Math.hypot(mouseX - xx, mouseY - yy) <= threshold;
+  }
+
+  function isNearCurvedLine(mouseX, mouseY, line, threshold = 8) {
+    // Sample points along the curve and check distance
+    for (let t = 0; t <= 1; t += 0.05) {
+      const x =
+        (1 - t) * (1 - t) * line.x1 +
+        2 * (1 - t) * t * line.controlX +
+        t * t * line.x2;
+      const y =
+        (1 - t) * (1 - t) * line.y1 +
+        2 * (1 - t) * t * line.controlY +
+        t * t * line.y2;
+
+      if (Math.hypot(mouseX - x, mouseY - y) <= threshold) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function isNearCircle(mouseX, mouseY, circle, threshold = 8) {
+    const distance = Math.hypot(mouseX - circle.x, mouseY - circle.y);
+    return Math.abs(distance - circle.radius) <= threshold;
+  }
+
+  function findElementUnderMouse(mouseX, mouseY) {
+    // Check circles first
+    for (let i = 0; i < circles.length; i++) {
+      const circle = circles[i];
+      if (
+        circle.visible &&
+        circle.radius > 0 &&
+        isNearCircle(mouseX, mouseY, circle)
+      ) {
+        return { type: "circle", element: circle, index: i };
+      }
+    }
+
+    // Check lines
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      if (line.controlX !== undefined && line.controlY !== undefined) {
+        // Curved line
+        if (isNearCurvedLine(mouseX, mouseY, line)) {
+          return { type: "curved_line", element: line, index: i };
+        }
+      } else {
+        // Straight line
+        if (isNearLine(mouseX, mouseY, line.x1, line.y1, line.x2, line.y2)) {
+          return { type: "line", element: line, index: i };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function deleteElement(elementInfo) {
+    if (elementInfo.type === "circle") {
+      const circle = elementInfo.element;
+
+      // Recursively delete all child elements first
+      deleteAllChildren(circle);
+
+      // Remove any lines that start from this circle
+      for (let i = lines.length - 1; i >= 0; i--) {
+        if (lines[i].fromCircle === circle) {
+          lines.splice(i, 1);
+        }
+      }
+
+      // Remove any lines that are attached to this circle
+      for (let i = lines.length - 1; i >= 0; i--) {
+        if (lines[i].attachedCircle === circle) {
+          lines[i].attachedCircle = null;
+          lines[i].hasAttachedElement = false;
+        }
+      }
+
+      // Remove child circles that belong to this circle
+      for (let i = circles.length - 1; i >= 0; i--) {
+        if (circles[i].parent === circle) {
+          circles.splice(i, 1);
+        }
+      }
+
+      // Remove the circle itself
+      circles.splice(elementInfo.index, 1);
+    } else if (
+      elementInfo.type === "line" ||
+      elementInfo.type === "curved_line"
+    ) {
+      const line = elementInfo.element;
+
+      // Recursively delete all child elements first
+      deleteAllChildren(line);
+
+      // Remove the attached circle if it exists and is not visible
+      if (line.attachedCircle && !line.attachedCircle.visible) {
+        const circleIndex = circles.indexOf(line.attachedCircle);
+        if (circleIndex > -1) {
+          circles.splice(circleIndex, 1);
+        }
+      }
+
+      // If there's an attached circle that is visible, mark the parent line as not having an attached element
+      if (line.attachedCircle && line.attachedCircle.visible) {
+        line.attachedCircle.connectedLine = null;
+      }
+
+      // Mark parent line as no longer having attached element
+      if (line.parentLine) {
+        line.parentLine.hasAttachedElement = false;
+      }
+
+      // Remove any child lines
+      for (let i = lines.length - 1; i >= 0; i--) {
+        if (lines[i].parentLine === line) {
+          lines.splice(i, 1);
+        }
+      }
+
+      // Remove the line itself
+      lines.splice(elementInfo.index, 1);
+    }
+  }
+
+  function deleteAllChildren(parentElement) {
+    // Find and delete all child circles
+    for (let i = circles.length - 1; i >= 0; i--) {
+      const circle = circles[i];
+      if (circle.parent === parentElement) {
+        // Recursively delete this circle's children first
+        deleteAllChildren(circle);
+
+        // Delete any lines that start from this child circle
+        for (let j = lines.length - 1; j >= 0; j--) {
+          if (lines[j].fromCircle === circle) {
+            // Recursively delete the line's children
+            deleteAllChildren(lines[j]);
+            lines.splice(j, 1);
+          }
+        }
+
+        // Delete any lines attached to this child circle
+        for (let j = lines.length - 1; j >= 0; j--) {
+          if (lines[j].attachedCircle === circle) {
+            // Recursively delete the line's children
+            deleteAllChildren(lines[j]);
+            lines[j].attachedCircle = null;
+            lines[j].hasAttachedElement = false;
+          }
+        }
+
+        // Remove the child circle
+        circles.splice(i, 1);
+      }
+    }
+
+    // Find and delete all child lines
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i];
+      if (
+        line.parentLine === parentElement ||
+        line.fromCircle === parentElement
+      ) {
+        // Recursively delete this line's children first
+        deleteAllChildren(line);
+
+        // Delete the attached circle if it exists and is not visible
+        if (line.attachedCircle && !line.attachedCircle.visible) {
+          const circleIndex = circles.indexOf(line.attachedCircle);
+          if (circleIndex > -1) {
+            circles.splice(circleIndex, 1);
+          }
+        }
+
+        // If there's an attached visible circle, clean up the connection
+        if (line.attachedCircle && line.attachedCircle.visible) {
+          // Recursively delete the attached circle's children
+          deleteAllChildren(line.attachedCircle);
+
+          // Remove the attached circle
+          const circleIndex = circles.indexOf(line.attachedCircle);
+          if (circleIndex > -1) {
+            circles.splice(circleIndex, 1);
+          }
+        }
+
+        // Remove the child line
+        lines.splice(i, 1);
+      }
+    }
+
+    // Special handling for lines - also check for children based on attachment
+    if (parentElement.attachedCircle) {
+      deleteAllChildren(parentElement.attachedCircle);
+    }
+  }
+
+  function deleteAllChildrenEnhanced(
+    parentElement,
+    visitedElements = new Set()
+  ) {
+    // Prevent infinite loops by tracking visited elements
+    if (visitedElements.has(parentElement)) {
+      return;
+    }
+    visitedElements.add(parentElement);
+
+    // Find and delete all child circles
+    for (let i = circles.length - 1; i >= 0; i--) {
+      const circle = circles[i];
+      if (circle.parent === parentElement && !visitedElements.has(circle)) {
+        // Recursively delete this circle's children first
+        deleteAllChildrenEnhanced(circle, visitedElements);
+
+        // Delete any lines that start from this child circle
+        for (let j = lines.length - 1; j >= 0; j--) {
+          if (lines[j].fromCircle === circle) {
+            deleteAllChildrenEnhanced(lines[j], visitedElements);
+            lines.splice(j, 1);
+          }
+        }
+
+        // Delete any lines attached to this child circle
+        for (let j = lines.length - 1; j >= 0; j--) {
+          if (lines[j].attachedCircle === circle) {
+            deleteAllChildrenEnhanced(lines[j], visitedElements);
+            lines.splice(j, 1);
+          }
+        }
+
+        // Remove the child circle
+        circles.splice(i, 1);
+      }
+    }
+
+    // Find and delete all child lines
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i];
+      if (
+        (line.parentLine === parentElement ||
+          line.fromCircle === parentElement) &&
+        !visitedElements.has(line)
+      ) {
+        // Recursively delete this line's children first
+        deleteAllChildrenEnhanced(line, visitedElements);
+
+        // Delete the attached circle if it exists
+        if (line.attachedCircle) {
+          deleteAllChildrenEnhanced(line.attachedCircle, visitedElements);
+          const circleIndex = circles.indexOf(line.attachedCircle);
+          if (circleIndex > -1) {
+            circles.splice(circleIndex, 1);
+          }
+        }
+
+        // Remove the child line
+        lines.splice(i, 1);
+      }
+    }
+  }
+
+  function deleteElementWithAllChildren(elementInfo) {
+    const toDelete = new Set();
+
+    // Collect all elements that need to be deleted
+    collectAllDescendants(elementInfo.element, toDelete);
+
+    // Add the parent element itself
+    toDelete.add(elementInfo.element);
+
+    // Delete all collected elements
+    // Delete circles
+    for (let i = circles.length - 1; i >= 0; i--) {
+      if (toDelete.has(circles[i])) {
+        circles.splice(i, 1);
+      }
+    }
+
+    // Delete lines
+    for (let i = lines.length - 1; i >= 0; i--) {
+      if (toDelete.has(lines[i])) {
+        lines.splice(i, 1);
+      }
+    }
+
+    // Clean up any remaining references
+    cleanupReferences(toDelete);
+  }
+
+  function collectAllDescendants(element, toDelete, visited = new Set()) {
+    if (visited.has(element)) return;
+    visited.add(element);
+
+    // Find child circles
+    circles.forEach((circle) => {
+      if (circle.parent === element && !toDelete.has(circle)) {
+        toDelete.add(circle);
+        collectAllDescendants(circle, toDelete, visited);
+      }
+    });
+
+    // Find child lines
+    lines.forEach((line) => {
+      if (
+        (line.parentLine === element || line.fromCircle === element) &&
+        !toDelete.has(line)
+      ) {
+        toDelete.add(line);
+        collectAllDescendants(line, toDelete, visited);
+
+        // Also collect attached circles
+        if (line.attachedCircle && !toDelete.has(line.attachedCircle)) {
+          toDelete.add(line.attachedCircle);
+          collectAllDescendants(line.attachedCircle, toDelete, visited);
+        }
+      }
+    });
+
+    // For lines, also check attached circles
+    if (element.attachedCircle && !toDelete.has(element.attachedCircle)) {
+      toDelete.add(element.attachedCircle);
+      collectAllDescendants(element.attachedCircle, toDelete, visited);
+    }
+  }
+
+  function cleanupReferences(deletedElements) {
+    // Clean up any remaining references to deleted elements
+    lines.forEach((line) => {
+      if (deletedElements.has(line.parentLine)) {
+        line.parentLine = null;
+      }
+      if (deletedElements.has(line.attachedCircle)) {
+        line.attachedCircle = null;
+        line.hasAttachedElement = false;
+      }
+      if (deletedElements.has(line.fromCircle)) {
+        line.fromCircle = null;
+      }
+    });
+
+    circles.forEach((circle) => {
+      if (deletedElements.has(circle.parent)) {
+        circle.parent = null;
+      }
+      if (deletedElements.has(circle.connectedLine)) {
+        circle.connectedLine = null;
+      }
+    });
+  }
+  // == END OF FUNCTIONS TO DELTE A COMPONENT ==
 
   document.getElementById("trash-can").addEventListener("click", function (e) {
     e.stopPropagation(); // Prevent the click from reaching the document
@@ -314,7 +709,13 @@ document.addEventListener("DOMContentLoaded", function () {
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    lines.forEach((line) => {
+    lines.forEach((line, index) => {
+      const isHovered =
+        eraserMode &&
+        hoveredElement &&
+        hoveredElement.type !== "circle" &&
+        hoveredElement.index === index;
+
       ctx.beginPath();
       ctx.moveTo(line.x1, line.y1);
 
@@ -343,13 +744,13 @@ document.addEventListener("DOMContentLoaded", function () {
         ctx.beginPath();
         ctx.moveTo(line.x1, line.y1);
         ctx.quadraticCurveTo(line.controlX, line.controlY, line.x2, line.y2);
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = isHovered ? "red" : "black";
+        ctx.lineWidth = isHovered ? 3 : 2;
         ctx.stroke();
       } else {
         ctx.lineTo(line.x2, line.y2);
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = isHovered ? "red" : "black";
+        ctx.lineWidth = isHovered ? 3 : 2;
         ctx.stroke();
       }
 
@@ -362,7 +763,13 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    circles.forEach((circle) => {
+    circles.forEach((circle, index) => {
+      const isHovered =
+        eraserMode &&
+        hoveredElement &&
+        hoveredElement.type === "circle" &&
+        hoveredElement.index === index;
+
       // Only draw center dot if not in preview mode and it's not visible/used
       if (
         !previewMode &&
@@ -380,8 +787,8 @@ document.addEventListener("DOMContentLoaded", function () {
         // Always draw the circle itself
         ctx.beginPath();
         ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = isHovered ? "red" : "black";
+        ctx.lineWidth = isHovered ? 3 : 2;
         ctx.stroke();
 
         // Only draw handles and dots if not in preview mode
@@ -472,6 +879,26 @@ document.addEventListener("DOMContentLoaded", function () {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
+    // Handle eraser mode clicks
+    if (eraserMode) {
+      const elementToDelete = findElementUnderMouse(mouseX, mouseY);
+      if (elementToDelete) {
+        deleteElement(elementToDelete);
+        hoveredElement = null; // Clear hover state
+
+        // Disable eraser mode after successful deletion
+        eraserMode = false;
+        const eraserButton = document.getElementById("eraser");
+        eraserButton.style.backgroundColor = "";
+        eraserButton.style.color = "";
+        canvas.style.cursor = "default";
+
+        draw();
+      }
+      return; // Don't process other interactions in eraser mode
+    }
+
+    // ... rest of your existing mousedown logic remains unchanged
     // check first for line endpoints or cirle handles, the blue dots have priority
     for (const line of lines) {
       if (isInsideCircle(mouseX, mouseY, line.x2, line.y2, 6)) {
@@ -625,6 +1052,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
+    // Handle eraser hover detection
+    if (eraserMode) {
+      const elementUnderMouse = findElementUnderMouse(mouseX, mouseY);
+
+      if (elementUnderMouse !== hoveredElement) {
+        hoveredElement = elementUnderMouse;
+        draw(); // Redraw to show/hide red outline
+      }
+      return; // Don't process other mouse interactions in eraser mode
+    }
+
+    // ... rest of the existing mousemove logic for dragging handles, lines, etc.
     circles.forEach((circle) => {
       if (!circle.draggingHandle) return;
       const dx = mouseX - circle.x;
