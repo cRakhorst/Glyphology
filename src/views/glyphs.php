@@ -134,7 +134,22 @@ if (!isset($_SESSION['user_id'])) {
                             <p id="characters-description">0/150</p>
                         </div>
                         <textarea id="description-custom"></textarea>
-                        <img src="/assets/pictures/Signature.png" alt="signature" id="signature">
+                        <div class="images">
+                            <img src="/assets/pictures/Signature.png" alt="signature" id="signature">
+                            <div class="right">
+                                <div class="delete-confirmation">
+                                    <img src="/assets/pictures/pin.png" alt="pin" id="pin-delete">
+                                    <p id="delete-text">Are you sure you want to delete your creation?</p>
+                                    <div class="checkmark">
+                                        <div class="check-line1"></div>
+                                        <div class="check-line2"></div>
+                                    </div>
+                                </div>
+                                <img src="/assets/pictures/magnifying-glass.png" alt="magnifying glass" id="magnifying-glass">
+                                <img src="/assets/pictures/eraser.png" alt="eraser" id="eraser">
+                                <img src="/assets/pictures/trash_can.png" alt="trash can" id="trash-can">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

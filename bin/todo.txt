@@ -1,3 +1,44 @@
+== BACKLOG ==
+
+1. MUST HAVE
+MAKE AN ADMIN PAGE
+make a delete component icon
+make it when you upload a glyph (or combo) that you automatically get sent to your creation
+the user must have the ability to edit their own glyphs
+have the user be able to make glyph combos
+have user be able to use liked custom glyphs to create glyph combos
+the user must have the ability to edit their own combos
+like glyphs
+like glyph combos
+sort glyphs in likes
+sort combos in likes
+make a favorites page for glyphs
+make favorites page for combos
+make all the forward and back arrows have a function
+
+
+2. SHOULD HAVE
 log every error
-make is when you upload a glyph (or combo) that you automatically get sent to your creation
 make a discord server
+have a filter on what gets sent in the description and title (like curse words)
+make a conation button
+have a different page where you can make bigger glyph combos
+make the website responsive to all devices (problematic for really small laptops, ipads and phones)
+give the tab a logo (the left corner in every tab)
+add music
+
+3. COULD HAVE
+EASTER EGG: make a secret glyph that when it's made it gets turned into the bill cypher glyph
+EASTER EGG: make a secret glyph that when it's made it gets turned into the bill cypher glyph
+EASTER EGG: make a small chance that hooty shows up and takes over the glyph, but only at the first circle, also make the title always say hootsofer, and the description a line from hooty. And make the hooty picture the sus/smug hooty face
+EASTER EGG: make an easter egg page to track all your easter eggs
+make an ai that could give a name and description for a glyph or combo when the user doesn't know any
+
+4. WOULDN'T HAVE
+
+
+
+
+== COMPLETED ==
+1. make a button to remove all dots when making a glyph or combo so you can see what it will look like
+1. make a delete button (restart from scratch)

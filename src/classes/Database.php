@@ -44,6 +44,7 @@ class Database
             $stmt->execute([$username, $hashedPassword]);
 
             $_SESSION['user_id'] = $conn->lastInsertId();
+            $_SESSION['username'] = $username;
 
             return ["success" => true, "message" => "Registration successful"];
         } catch (PDOException $e) {
@@ -68,6 +69,7 @@ class Database
             }
 
             $_SESSION['user_id'] = $user['user_id'];
+            $_SESSION['username'] = $username;
 
             return ["success" => true, "user_id" => $user['user_id']];
         } catch (PDOException $e) {

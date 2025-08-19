@@ -151,6 +151,59 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector(".done-creating").style.display = "none";
   });
 
+  // Add preview mode state
+  let previewMode = false;
+
+  document
+    .getElementById("magnifying-glass")
+    .addEventListener("click", function () {
+      previewMode = !previewMode;
+      draw();
+    });
+
+  document.getElementById("eraser").addEventListener("click", function () {
+    
+  });
+
+  document.getElementById("trash-can").addEventListener("click", function (e) {
+    e.stopPropagation(); // Prevent the click from reaching the document
+    document.querySelector(".delete-confirmation").style.display = "flex";
+  });
+
+  // Add click handler for the delete confirmation div to prevent clicks from reaching the document
+  document
+    .querySelector(".delete-confirmation")
+    .addEventListener("click", function (e) {
+      e.stopPropagation();
+    });
+
+  // Add click handler to the document to close the delete confirmation when clicking outside
+  document.addEventListener("click", function (e) {
+    const deleteConfirmation = document.querySelector(".delete-confirmation");
+    if (deleteConfirmation.style.display === "flex") {
+      deleteConfirmation.style.display = "none";
+    }
+  });
+
+  document.querySelector(".checkmark").addEventListener("click", function () {
+    document.getElementById("title").value = "";
+    document.getElementById("description-custom").value = "";
+    document.getElementById("characters").textContent = "0/30";
+    document.getElementById("characters-description").textContent = "0/150";
+    circles.length = 1; // keep the center dot
+    circles[0] = {
+      x: center.x,
+      y: center.y,
+      radius: 0,
+      draggingHandle: false,
+      visible: false,
+      usedDots: [],
+    };
+    lines.length = 0;
+    draw();
+    document.querySelector(".delete-confirmation").style.display = "none";
+  });
+
   document.getElementById("cross").addEventListener("click", function () {
     document.querySelector(".choose").style.display = "none";
     if (activeCircle) {
@@ -266,22 +319,25 @@ document.addEventListener("DOMContentLoaded", function () {
       ctx.moveTo(line.x1, line.y1);
 
       if (line.controlX !== undefined && line.controlY !== undefined) {
-        // Draw control point
-        ctx.beginPath();
-        ctx.arc(line.controlX, line.controlY, 5, 0, Math.PI * 2);
-        ctx.fillStyle = "red";
-        ctx.fill();
+        // Only draw control points and guide lines if not in preview mode
+        if (!previewMode) {
+          // Draw control point
+          ctx.beginPath();
+          ctx.arc(line.controlX, line.controlY, 5, 0, Math.PI * 2);
+          ctx.fillStyle = "red";
+          ctx.fill();
 
-        // Draw guide lines to control point
-        ctx.beginPath();
-        ctx.moveTo(line.x1, line.y1);
-        ctx.lineTo(line.controlX, line.controlY);
-        ctx.moveTo(line.x2, line.y2);
-        ctx.lineTo(line.controlX, line.controlY);
-        ctx.setLineDash([5, 5]);
-        ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
-        ctx.stroke();
-        ctx.setLineDash([]);
+          // Draw guide lines to control point
+          ctx.beginPath();
+          ctx.moveTo(line.x1, line.y1);
+          ctx.lineTo(line.controlX, line.controlY);
+          ctx.moveTo(line.x2, line.y2);
+          ctx.lineTo(line.controlX, line.controlY);
+          ctx.setLineDash([5, 5]);
+          ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
 
         // Draw the curve
         ctx.beginPath();
@@ -297,14 +353,23 @@ document.addEventListener("DOMContentLoaded", function () {
         ctx.stroke();
       }
 
-      ctx.beginPath();
-      ctx.arc(line.x2, line.y2, 5, 0, Math.PI * 2);
-      ctx.fillStyle = "blue";
-      ctx.fill();
+      // Only draw line endpoints if not in preview mode
+      if (!previewMode) {
+        ctx.beginPath();
+        ctx.arc(line.x2, line.y2, 5, 0, Math.PI * 2);
+        ctx.fillStyle = "blue";
+        ctx.fill();
+      }
     });
 
     circles.forEach((circle) => {
-      if (circle.radius === 0 && !circle.visible && !circle.used) {
+      // Only draw center dot if not in preview mode and it's not visible/used
+      if (
+        !previewMode &&
+        circle.radius === 0 &&
+        !circle.visible &&
+        !circle.used
+      ) {
         ctx.beginPath();
         ctx.arc(circle.x, circle.y, 5, 0, Math.PI * 2);
         ctx.fillStyle = "black";
@@ -312,28 +377,32 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       if (circle.visible) {
+        // Always draw the circle itself
         ctx.beginPath();
         ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
         ctx.strokeStyle = "black";
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        const handleX = circle.x + circle.radius * Math.cos(HANDLE_ANGLE);
-        const handleY = circle.y + circle.radius * Math.sin(HANDLE_ANGLE);
-        ctx.beginPath();
-        ctx.arc(handleX, handleY, 6, 0, Math.PI * 2);
-        ctx.fillStyle = "blue";
-        ctx.fill();
-
-        for (let i = 0; i < 16; i++) {
-          const angle = (i * Math.PI) / 8;
-          const x = circle.x + circle.radius * Math.cos(angle);
-          const y = circle.y + circle.radius * Math.sin(angle);
-
+        // Only draw handles and dots if not in preview mode
+        if (!previewMode) {
+          const handleX = circle.x + circle.radius * Math.cos(HANDLE_ANGLE);
+          const handleY = circle.y + circle.radius * Math.sin(HANDLE_ANGLE);
           ctx.beginPath();
-          ctx.arc(x, y, 4, 0, Math.PI * 2);
-          ctx.fillStyle = "black";
+          ctx.arc(handleX, handleY, 6, 0, Math.PI * 2);
+          ctx.fillStyle = "blue";
           ctx.fill();
+
+          for (let i = 0; i < 16; i++) {
+            const angle = (i * Math.PI) / 8;
+            const x = circle.x + circle.radius * Math.cos(angle);
+            const y = circle.y + circle.radius * Math.sin(angle);
+
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = "black";
+            ctx.fill();
+          }
         }
       }
     });
@@ -396,6 +465,9 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   canvas.addEventListener("mousedown", (e) => {
+    // Don't allow interactions in preview mode
+    if (previewMode) return;
+
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
@@ -546,6 +618,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   canvas.addEventListener("mousemove", (e) => {
+    // Don't allow interactions in preview mode
+    if (previewMode) return;
+
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;

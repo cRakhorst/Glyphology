@@ -15,6 +15,7 @@ $routes = [
  'login' => 'login.php',
  'create' => 'create.php',
  'glyphs' => 'glyphs.php',
+ 'admin' => 'admin.php',
 ];
 
 $db = new Database();
