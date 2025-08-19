@@ -1,4 +1,115 @@
+function initializeDisplayCanvas() {
+  const displayCanvas = document.getElementById("display-canvas");
+  if (!displayCanvas) return;
+
+  const rect = displayCanvas.getBoundingClientRect();
+  displayCanvas.width = rect.width;
+  displayCanvas.height = rect.height;
+
+  const ctx = displayCanvas.getContext("2d");
+
+  // Get the glyph ID from the page (you'll need to add this)
+  const glyphTitle = document.getElementById("glyph-title");
+  if (!glyphTitle) return;
+
+  // Extract glyph ID from a data attribute or fetch the latest glyph
+  fetchAndDisplayLatestGlyph(ctx, displayCanvas);
+}
+
+function fetchAndDisplayLatestGlyph(ctx, canvas) {
+  fetch("api/get_latest_glyph_components", {
+    method: "GET",
+    credentials: "same-origin",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success && data.components) {
+        renderGlyphComponents(ctx, canvas, data.components);
+      } else {
+        console.log("No glyph components to display");
+        // Clear canvas or show placeholder
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching glyph components:", error);
+    });
+}
+
+function renderGlyphComponents(ctx, canvas, components) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Separate components by type
+  const circles = [];
+  const lines = [];
+  const curvedLines = [];
+
+  components.forEach((component) => {
+    const coords = component.coordinates.split(",").map(parseFloat);
+
+    switch (component.type) {
+      case "circle":
+        circles.push({
+          x: coords[0],
+          y: coords[1],
+          radius: parseFloat(component.size),
+        });
+        break;
+
+      case "line":
+        lines.push({
+          x1: coords[0],
+          y1: coords[1],
+          x2: coords[2],
+          y2: coords[3],
+        });
+        break;
+
+      case "curved_line":
+        curvedLines.push({
+          x1: coords[0],
+          y1: coords[1],
+          x2: coords[2],
+          y2: coords[3],
+          controlX: coords[4],
+          controlY: coords[5],
+        });
+        break;
+    }
+  });
+
+  // Draw straight lines
+  lines.forEach((line) => {
+    ctx.beginPath();
+    ctx.moveTo(line.x1, line.y1);
+    ctx.lineTo(line.x2, line.y2);
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+
+  // Draw curved lines
+  curvedLines.forEach((line) => {
+    ctx.beginPath();
+    ctx.moveTo(line.x1, line.y1);
+    ctx.quadraticCurveTo(line.controlX, line.controlY, line.x2, line.y2);
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+
+  // Draw circles
+  circles.forEach((circle) => {
+    ctx.beginPath();
+    ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
+  setTimeout(initializeDisplayCanvas, 100);
   const ghostPicture = document.getElementById("ghost");
   let minutes = 5;
 

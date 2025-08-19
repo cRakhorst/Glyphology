@@ -1,7 +1,7 @@
-<?php 
-    if(!isset($_SESSION['user_id'])) {
-        echo "<script> window.location.href = 'login'</script>";
-    }
+<?php
+if (!isset($_SESSION['user_id'])) {
+    echo "<script> window.location.href = 'login'</script>";
+}
 ?>
 
 <!DOCTYPE html>
@@ -64,19 +64,21 @@
                 <div class="left-page" id="page">
                     <div class="header">
                         <?php
-                        $combo = $db->getCustomComboById(1); // Assuming 1 is the combo ID
-                        echo "<h1 id='glyph-title'>" . htmlspecialchars($combo['title']) . "</h1>"; ?>
-                        <p id="inventor">Created by: 
+                        $glyph = $db->getLatestGlyph();
+                        echo "<h1 id='glyph-title'>" . htmlspecialchars($glyph['title']) . "</h1>"; ?>
+                        <p id="inventor">Created by: <?php echo htmlspecialchars($glyph['username']); ?></p>
                     </div>
                     <div class="back-arrow">
                         <div class="line-1"></div>
                         <div class="line-2"></div>
                     </div>
                     <div class="content">
+                        <canvas id="display-canvas"></canvas>
                     </div>
                     <div class="footer">
                         <p id="info">Description:</p>
-                        <p id="description">
+                        <p id="description"><?php $glyph = $db->getLatestGlyph();
+                                            echo htmlspecialchars($glyph['description']); ?></p>
                     </div>
                 </div>
                 <div class="rings">

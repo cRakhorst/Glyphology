@@ -124,7 +124,7 @@ foreach ($components as $component) {
         exit;
     }
 
-    // Valideer component types
+    // validate component type
     $allowedTypes = ['circle', 'line', 'curved_line'];
     if (!in_array($component['type'], $allowedTypes)) {
         echo json_encode(['success' => false, 'message' => 'Invalid component type: ' . $component['type']]);

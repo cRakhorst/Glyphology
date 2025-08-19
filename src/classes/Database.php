@@ -91,41 +91,6 @@ class Database
         }
     }
 
-    public static function getUserById($userId)
-    {
-        $conn = self::connect();
-        $stmt = $conn->prepare("SELECT * FROM glyph_users WHERE user_id = ?");
-        $stmt->execute([$userId]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public static function getCustomComboById($comboId)
-    {
-        $conn = self::connect();
-        $stmt = $conn->prepare("SELECT * FROM glyph_combo_custom WHERE custom_combo_id = ?");
-        $stmt->execute([$comboId]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function showGlyphComboComponents($comboId)
-    {
-        $conn = self::connect();
-
-        $stmt = $conn->prepare("SELECT gcc.component_id, gcc.type, gcc.size, gcc.coordinates
-        FROM glyph_combo_custom_has_components gchc
-        JOIN glyph_combo_components gcc ON gcc.component_id = gchc.glyph_combo_components_component_id
-        WHERE gchc.glyph_combo_custom_custom_combo_id = ?
-    ");
-        $stmt->execute([$comboId]);
-        $components = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        echo "<canvas id='glyph-canvas' width='300' height='300'></canvas>";
-
-        echo "<script>
-        const glyphComponents = " . json_encode($components) . ";
-    </script>";
-    }
-
     public static function saveCustomGlyph($title, $description, $components, $userId)
     {
         $logDir = realpath(__DIR__ . '/../../logs');
@@ -218,31 +183,6 @@ class Database
         }
     }
 
-
-    public static function getCustomGlyphsByUser($userId)
-    {
-        try {
-            $conn = self::connect();
-            $stmt = $conn->prepare("SELECT * FROM glyph_custom WHERE glyph_users_user_id = ? ORDER BY glyph_id DESC");
-            $stmt->execute([$userId]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            return [];
-        }
-    }
-
-    public static function getCustomGlyphById($glyphId)
-    {
-        try {
-            $conn = self::connect();
-            $stmt = $conn->prepare("SELECT * FROM glyph_custom WHERE glyph_id = ?");
-            $stmt->execute([$glyphId]);
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            return null;
-        }
-    }
-
     public static function getGlyphComponents($glyphId)
     {
         try {
@@ -257,6 +197,39 @@ class Database
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             return [];
+        }
+    }
+
+    public static function getLatestGlyph()
+    {
+        $logDir = realpath(__DIR__ . '/../../logs');
+        if ($logDir && is_dir($logDir) && is_writable($logDir)) {
+            ini_set('error_log', $logDir . '/show_latest_glyph.log');
+        }
+        try {
+            $conn = self::connect();
+
+            // Debug: Check if there are any records
+            $countStmt = $conn->prepare("SELECT COUNT(*) as count FROM glyph_custom");
+            $countStmt->execute();
+            $count = $countStmt->fetch(PDO::FETCH_ASSOC);
+            error_log("Total records in glyph_custom: " . $count['count']);
+
+            $stmt = $conn->prepare("
+            SELECT gc.*, gu.username 
+            FROM glyph_custom gc 
+            LEFT JOIN glyph_users gu ON gc.glyph_users_user_id = gu.user_id 
+            ORDER BY gc.glyph_id DESC 
+            LIMIT 1
+        ");
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            error_log("Query result: " . print_r($result, true));
+            return $result;
+        } catch (PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return null;
         }
     }
 }
