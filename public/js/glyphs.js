@@ -1447,9 +1447,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "0/150";
 
           draw();
-
-          // show succes message and send the user to their glyph
-          alert("Glyph succesfully saved!");
+          window.location.href = `/glyph/${result.glyph_id}`;
         } else {
           removeErrorMessage();
           document.getElementById("error-message").textContent =

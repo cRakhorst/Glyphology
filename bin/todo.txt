@@ -2,9 +2,8 @@
 
 1. MUST HAVE
 MAKE AN ADMIN PAGE
-make it when you upload a glyph (or combo) that you automatically get sent to your creation
 the user must have the ability to edit their own glyphs
-like glyphs
+the user must have the ability to delete their own glyphs
 sort glyphs in likes
 make a favorites page for glyphs
 
@@ -43,3 +42,5 @@ make an ai that could give a name and description for a glyph or combo when the 
 1. make a button to remove all dots when making a glyph or combo so you can see what it will look like
 1. make a delete button (restart from scratch)
 1. make a delete component icon
+1. make it when you upload a glyph (or combo) that you automatically get sent to your creation
+1. like glyphs

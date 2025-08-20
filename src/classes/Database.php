@@ -116,8 +116,8 @@ class Database
 
             // step 2 - Insert glyph_custom
             $stmt = $conn->prepare("
-            INSERT INTO glyph_custom (title, description, glyph_users_user_id) 
-            VALUES (?, ?, ?)
+            INSERT INTO glyph_custom (title, description, glyph_users_user_id, likes) 
+            VALUES (?, ?, ?, 0)
         ");
             $stmt->execute([$title, $description, $userId]);
             $glyph_id = (int)$conn->lastInsertId();
@@ -232,6 +232,112 @@ class Database
         } catch (PDOException $e) {
             error_log("Database error: " . $e->getMessage());
             return null;
+        }
+    }
+
+    public static function getGlyphById($glyphId)
+    {
+        $logDir = realpath(__DIR__ . '/../../logs');
+        if ($logDir && is_dir($logDir) && is_writable($logDir)) {
+            ini_set('error_log', $logDir . '/get_glyph_by_id.log');
+        }
+
+        try {
+            $conn = self::connect();
+
+            $stmt = $conn->prepare("
+            SELECT gc.*, gu.username 
+            FROM glyph_custom gc 
+            LEFT JOIN glyph_users gu ON gc.glyph_users_user_id = gu.user_id 
+            WHERE gc.glyph_id = ?
+        ");
+            $stmt->execute([$glyphId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            error_log("getGlyphById($glyphId) result: " . print_r($result, true));
+            return $result;
+        } catch (PDOException $e) {
+            error_log("Database error in getGlyphById: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    public static function getGlyphLikes($glyphId)
+    {
+        try {
+            $conn = self::connect();
+            $stmt = $conn->prepare("SELECT likes FROM glyph_custom WHERE glyph_id = ?");
+            $stmt->execute([$glyphId]);
+            return (int)$stmt->fetchColumn();
+        } catch (PDOException $e) {
+            return 0;
+        }
+    }
+
+    public static function hasUserFavoritedGlyph($userId, $glyphId)
+    {
+        try {
+            $conn = self::connect();
+            $stmt = $conn->prepare("SELECT 1 FROM glyph_user_has_favorite_glyphs WHERE glyph_users_user_id = ? AND glyph_custom_glyph_id = ?");
+            $stmt->execute([$userId, $glyphId]);
+            return $stmt->fetch() !== false;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public static function toggleGlyphFavorite($userId, $glyphId)
+    {
+        try {
+            $conn = self::connect();
+            $conn->beginTransaction();
+
+            // Check if the user has already favorited this glyph
+            $stmt = $conn->prepare('SELECT 1 FROM glyph_user_has_favorite_glyphs WHERE glyph_users_user_id = ? AND glyph_custom_glyph_id = ?');
+            $stmt->execute([$userId, $glyphId]);
+            $favorite = $stmt->fetch();
+
+            if ($favorite) {
+                // Remove favorite
+                $stmt = $conn->prepare('DELETE FROM glyph_user_has_favorite_glyphs WHERE glyph_users_user_id = ? AND glyph_custom_glyph_id = ?');
+                $stmt->execute([$userId, $glyphId]);
+                
+                // Decrease likes count
+                $stmt = $conn->prepare('UPDATE glyph_custom SET likes = likes - 1 WHERE glyph_id = ?');
+                $stmt->execute([$glyphId]);
+                $action = 'removed';
+            } else {
+                // Add favorite
+                $stmt = $conn->prepare('INSERT INTO glyph_user_has_favorite_glyphs (glyph_users_user_id, glyph_custom_glyph_id) VALUES (?, ?)');
+                $stmt->execute([$userId, $glyphId]);
+                
+                // Increase likes count
+                $stmt = $conn->prepare('UPDATE glyph_custom SET likes = likes + 1 WHERE glyph_id = ?');
+                $stmt->execute([$glyphId]);
+                $action = 'added';
+            }
+
+            // Get updated likes count
+            $stmt = $conn->prepare('SELECT likes FROM glyph_custom WHERE glyph_id = ?');
+            $stmt->execute([$glyphId]);
+            $likes = $stmt->fetch(PDO::FETCH_ASSOC)['likes'];
+
+            $conn->commit();
+
+            return [
+                'success' => true,
+                'likes_count' => $likes,
+                'action' => $action
+            ];
+
+        } catch (Exception $e) {
+            if ($conn && $conn->inTransaction()) {
+                $conn->rollBack();
+            }
+            return [
+                'success' => false,
+                'message' => 'Database error: ' . $e->getMessage()
+            ];
         }
     }
 }
