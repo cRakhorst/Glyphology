@@ -53,7 +53,7 @@ if ($page === 'glyph') {
         }
     } else {
         // If /glyph is accessed without a numeric ID, show 404
-        $viewFile = '404.php';
+        $viewFile = 'top-glyphs.php';
     }
 } else {
     $viewFile = $routes[$page] ?? '404.php';

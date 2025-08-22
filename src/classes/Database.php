@@ -301,7 +301,7 @@ class Database
                 // Remove favorite
                 $stmt = $conn->prepare('DELETE FROM glyph_user_has_favorite_glyphs WHERE glyph_users_user_id = ? AND glyph_custom_glyph_id = ?');
                 $stmt->execute([$userId, $glyphId]);
-                
+
                 // Decrease likes count
                 $stmt = $conn->prepare('UPDATE glyph_custom SET likes = likes - 1 WHERE glyph_id = ?');
                 $stmt->execute([$glyphId]);
@@ -310,7 +310,7 @@ class Database
                 // Add favorite
                 $stmt = $conn->prepare('INSERT INTO glyph_user_has_favorite_glyphs (glyph_users_user_id, glyph_custom_glyph_id) VALUES (?, ?)');
                 $stmt->execute([$userId, $glyphId]);
-                
+
                 // Increase likes count
                 $stmt = $conn->prepare('UPDATE glyph_custom SET likes = likes + 1 WHERE glyph_id = ?');
                 $stmt->execute([$glyphId]);
@@ -329,7 +329,6 @@ class Database
                 'likes_count' => $likes,
                 'action' => $action
             ];
-
         } catch (Exception $e) {
             if ($conn && $conn->inTransaction()) {
                 $conn->rollBack();
@@ -338,6 +337,62 @@ class Database
                 'success' => false,
                 'message' => 'Database error: ' . $e->getMessage()
             ];
+        }
+    }
+
+    public static function getGlyphFromTopPosition($position)
+    {
+        $logDir = realpath(__DIR__ . '/../../logs');
+        if ($logDir && is_dir($logDir) && is_writable($logDir)) {
+            ini_set('error_log', $logDir . '/get_glyph_by_position.log');
+        }
+        
+        error_log("[Database] getGlyphFromTopPosition called with position: $position");
+        
+        try {
+            $conn = self::connect();
+            error_log("[Database] Database connection established");
+            
+            // First get the glyph ID at the specified position
+            $query = "
+                SELECT glyph_id 
+                FROM glyph_custom
+                ORDER BY likes DESC, glyph_id DESC
+                LIMIT 1 OFFSET " . intval($position);
+            error_log("[Database] Executing query: " . $query);
+            $stmt = $conn->query($query);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            error_log("[Database] Initial query result: " . print_r($result, true));
+            
+            if (!$result) {
+                error_log("[Database] No glyph found at position $position");
+                return null;
+            }
+            
+            // Use existing functions to get the full glyph data
+            error_log("[Database] Getting full glyph data for ID: " . $result['glyph_id']);
+            
+            $glyph = self::getGlyphById($result['glyph_id']);
+            error_log("[Database] getGlyphById result: " . print_r($glyph, true));
+            
+            $components = self::getGlyphComponents($result['glyph_id']);
+            error_log("[Database] getGlyphComponents result: " . print_r($components, true));
+            
+            if (!$glyph) {
+                error_log("[Database] Failed to get glyph data for ID: " . $result['glyph_id']);
+                return null;
+            }
+            
+            // Add components to the glyph data
+            $glyph['components'] = $components;
+            
+            error_log("[Database] Returning complete glyph data: " . print_r($glyph, true));
+            return $glyph;
+        } catch (PDOException $e) {
+            error_log("[Database] PDOException in getGlyphFromTopPosition: " . $e->getMessage());
+            error_log("[Database] Stack trace: " . $e->getTraceAsString());
+            return null;
         }
     }
 }

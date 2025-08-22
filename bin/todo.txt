@@ -1,12 +1,17 @@
 == BACKLOG ==
 
-1. MUST HAVE
+BETA TEST MUST HAVE
 MAKE AN ADMIN PAGE
-the user must have the ability to edit their own glyphs
-the user must have the ability to delete their own glyphs
 sort glyphs in likes
 make a favorites page for glyphs
+make a hamburger menu in the corner for (donation, discord and easier navigation)
 
+SHOULD HAVE
+the user must have the ability to edit their own glyphs
+the user must have the ability to delete their own glyphs
+
+
+1. MUST HAVE
 have the user be able to make glyph combos
 have user be able to use liked custom glyphs to create glyph combos
 the user must have the ability to edit their own combos
@@ -28,14 +33,11 @@ add music
 
 3. COULD HAVE
 EASTER EGG: make a secret glyph that when it's made it gets turned into the bill cypher glyph
-EASTER EGG: make a secret glyph that when it's made it gets turned into the bill cypher glyph
 EASTER EGG: make a small chance that hooty shows up and takes over the glyph, but only at the first circle, also make the title always say hootsofer, and the description a line from hooty. And make the hooty picture the sus/smug hooty face
 EASTER EGG: make an easter egg page to track all your easter eggs
 make an ai that could give a name and description for a glyph or combo when the user doesn't know any
 
 4. WOULDN'T HAVE
-
-
 
 
 == COMPLETED ==

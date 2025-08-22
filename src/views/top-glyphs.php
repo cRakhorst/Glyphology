@@ -1,10 +1,3 @@
-<?php
-$url = $_SERVER['REQUEST_URI'];
-$parts = explode('/', $url);
-$glyphId = $parts[2];
-$glyph = $db->getGlyphById($glyphId);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,7 +5,7 @@ $glyph = $db->getGlyphById($glyphId);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glypholagy</title>
-    <link rel="stylesheet" href="/css/glyph.css">
+    <link rel="stylesheet" href="/css/top-glyphs.css">
 </head>
 
 <body>
@@ -63,10 +56,18 @@ $glyph = $db->getGlyphById($glyphId);
             </div>
             <div class="middle">
                 <div class="left-page" id="page">
+                    <div class="sticky-notes">
+                        <img src="/assets/pictures/pink-sticky-note-front.png" alt="pink sticky note front" id="pink-sticky-note-front">
+                        <p id="top-glyphs-text">Popular</p>
+                        <!-- <img src="/assets/pictures/pink-sticky-note-back.png" alt="pink sticky note back" id="pink-sticky-note-back">
+                        <img src="/assets/pictures/green-sticky-note-front.png" alt="green sticky note front" id="green-sticky-note-front">
+                        <img src="/assets/pictures/green-sticky-note-back.png" alt="green sticky note back" id="green-sticky-note-back">
+                        <img src="/assets/pictures/tan-sticky-note-front.png" alt="tan sticky note front" id="tan-sticky-note-front">
+                        <img src="/assets/pictures/tan-sticky-note-back.png" alt="tan sticky note back" id="tan-sticky-note-back"> -->
+                    </div>
                     <div class="header">
-                        <?php
-                        echo "<h1 id='glyph-title'>" . htmlspecialchars($glyph['title']) . "</h1>"; ?>
-                        <p id="inventor">Created by: <?php echo htmlspecialchars($glyph['username']); ?></p>
+                        <h1 id="glyph-title"></h1>
+                        <p id="inventor"></p>
                     </div>
                     <div class="back-arrow">
                         <div class="line-1"></div>
@@ -77,24 +78,9 @@ $glyph = $db->getGlyphById($glyphId);
                     </div>
                     <div class="footer">
                         <p id="info">Description:</p>
-                        <p id="description"><?php
-                                            echo htmlspecialchars($glyph['description']); ?></p>
-                        <?php
-                        $heartIconSrc = "/assets/pictures/heart-icon.png";
-                        if (isset($_SESSION['user_id']) && $db->hasUserFavoritedGlyph($_SESSION['user_id'], $glyphId)) {
-                            $heartIconSrc = "/assets/pictures/heart-filled.png";
-                        }
-                        ?>
-                        <img src="<?php echo htmlspecialchars($heartIconSrc); ?>" alt="heart icon" id="heart-icon">
-                        <p id="like-count"> <?php
-                                            $likes = $db->getGlyphLikes($glyphId);
-
-                                            if ($likes === 1) {
-                                                echo htmlspecialchars($likes) . " like";
-                                            } else {
-                                                echo htmlspecialchars($likes) . " likes";
-                                            }
-                                            ?></p>
+                        <p id="description"></p>
+                        <img src="/assets/pictures/heart-icon.png" alt="heart icon" id="heart-icon">
+                        <p id="like-count"></p>
                     </div>
                 </div>
                 <div class="rings">
@@ -157,7 +143,7 @@ $glyph = $db->getGlyphById($glyphId);
         </div>
     </div>
 
-    <script src="/js/glyph.js"></script>
+    <script src="/js/top-glyphs.js"></script>
 </body>
 
 </html>
