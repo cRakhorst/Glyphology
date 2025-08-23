@@ -57,13 +57,8 @@
             <div class="middle">
                 <div class="left-page" id="page">
                     <div class="sticky-notes">
-                        <img src="/assets/pictures/pink-sticky-note-front.png" alt="pink sticky note front" id="pink-sticky-note-front">
-                        <p id="top-glyphs-text">Popular</p>
-                        <!-- <img src="/assets/pictures/pink-sticky-note-back.png" alt="pink sticky note back" id="pink-sticky-note-back">
-                        <img src="/assets/pictures/green-sticky-note-front.png" alt="green sticky note front" id="green-sticky-note-front">
-                        <img src="/assets/pictures/green-sticky-note-back.png" alt="green sticky note back" id="green-sticky-note-back">
-                        <img src="/assets/pictures/tan-sticky-note-front.png" alt="tan sticky note front" id="tan-sticky-note-front">
-                        <img src="/assets/pictures/tan-sticky-note-back.png" alt="tan sticky note back" id="tan-sticky-note-back"> -->
+                        <img src="/assets/pictures/pink-sticky-note-front.png" alt="pink sticky note front" id="sticky-note-front">
+                        <p id="front-sticky-note-text">Popular</p>
                     </div>
                     <div class="header">
                         <h1 id="glyph-title"></h1>
@@ -96,7 +91,27 @@
                     <div id="ring"></div>
                 </div>
                 <div class="right-page" id="page">
-
+                    <div class="sticky-notes-right">
+                        <p id="back-sticky-note-text">Favorites</p>
+                        <p id="back-sticky-note-text">Create</p>
+                    </div>
+                    <div class="header-right">
+                        <h1 id="glyph-title-right"></h1>
+                        <p id="inventor-right"></p>
+                    </div>
+                    <div class="forward-arrow">
+                        <div class="line-1"></div>
+                        <div class="line-2"></div>
+                    </div>
+                    <div class="content-right">
+                        <canvas id="display-canvas-right"></canvas>
+                    </div>
+                    <div class="footer-right">
+                        <p id="info-right">Description:</p>
+                        <p id="description-right"></p>
+                        <img src="/assets/pictures/heart-icon.png" alt="heart icon" id="heart-icon-right">
+                        <p id="like-count-right"></p>
+                    </div>
                 </div>
             </div>
             <div class="right">
@@ -111,6 +126,7 @@
                     <img src="/assets/pictures/Flower.png" alt="Flower" id="flower">
                 </div>
                 <img src="/assets/pictures/eda-note.png" alt="eda-note" id="eda-note">
+                <div class="hamburger-menu"></div>
             </div>
         </div>
         <div class="table-bottom"></div>

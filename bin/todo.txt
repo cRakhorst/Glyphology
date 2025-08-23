@@ -2,7 +2,6 @@
 
 BETA TEST MUST HAVE
 MAKE AN ADMIN PAGE
-sort glyphs in likes
 make a favorites page for glyphs
 make a hamburger menu in the corner for (donation, discord and easier navigation)
 
@@ -46,3 +45,4 @@ make an ai that could give a name and description for a glyph or combo when the 
 1. make a delete component icon
 1. make it when you upload a glyph (or combo) that you automatically get sent to your creation
 1. like glyphs
+1. sort glyphs in likes
