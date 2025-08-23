@@ -3,11 +3,13 @@
 BETA TEST MUST HAVE
 MAKE AN ADMIN PAGE
 make a favorites page for glyphs
-make a hamburger menu in the corner for (donation, discord and easier navigation)
+set up discord server
+fix redirects
+add menu to all pages
 
 SHOULD HAVE
-the user must have the ability to edit their own glyphs
-the user must have the ability to delete their own glyphs
+the user should have the ability to edit their own glyphs
+the user should have the ability to delete their own glyphs
 
 
 1. MUST HAVE
@@ -22,7 +24,6 @@ make all the forward and back arrows have a function
 
 2. SHOULD HAVE
 log every error
-make a discord server
 have a filter on what gets sent in the description and title (like curse words)
 make a donation button
 have a different page where you can make bigger glyph combos
@@ -46,3 +47,5 @@ make an ai that could give a name and description for a glyph or combo when the 
 1. make it when you upload a glyph (or combo) that you automatically get sent to your creation
 1. like glyphs
 1. sort glyphs in likes
+1. make a hamburger menu in the corner for (donation, discord and easier navigation)
+1. make a discord server
