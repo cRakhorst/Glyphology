@@ -1,6 +1,7 @@
 <?php 
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
-    echo "<script> window.location.href = 'glyphs'</script>";
+    echo "<script> window.location.href = 'login'</script>";
+    session_destroy();
 }
 ?>
 

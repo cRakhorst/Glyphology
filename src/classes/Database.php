@@ -409,4 +409,23 @@ class Database
             return 0;
         }
     }
+
+    public static function getUserFavoriteGlyphs($userId)
+    {
+        try {
+            $conn = self::connect();
+            $stmt = $conn->prepare("
+                SELECT gc.*, gu.username 
+                FROM glyph_user_has_favorite_glyphs gufg
+                JOIN glyph_custom gc ON gufg.glyph_custom_glyph_id = gc.glyph_id
+                LEFT JOIN glyph_users gu ON gc.glyph_users_user_id = gu.user_id
+                WHERE gufg.glyph_users_user_id = ?
+                ORDER BY gc.likes DESC, gc.glyph_id ASC
+            ");
+            $stmt->execute([$userId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
 }

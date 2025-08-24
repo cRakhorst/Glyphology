@@ -1,3 +1,12 @@
+function showBetaTestMessage() {
+  document.getElementById("error-message").textContent =
+    "Due to the beta testing fase, this feature is currently unavailable. We apologize for the inconvenience.";
+  document.getElementById("error-message").style.display = "flex";
+  setTimeout(() => {
+    document.getElementById("error-message").style.display = "none";
+  }, 10000);
+}
+
 function initializeDisplayCanvas() {
   const displayCanvas = document.getElementById("display-canvas");
   if (!displayCanvas) return;
@@ -130,11 +139,11 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   document.querySelector(".glyphs").addEventListener("click", function () {
-    window.location.href = "create";
+    window.location.href = "glyphs";
   });
 
   document.querySelector(".combos").addEventListener("click", function () {
-    window.location.href = "combos";
+    showBetaTestMessage();
   });
 
   document
@@ -1468,4 +1477,34 @@ document.addEventListener("DOMContentLoaded", function () {
           ". Please message me on Discord if this keeps happening.";
       });
   }
+  //hamburger menu click handler
+  const hamburgerMenu = document.querySelector(".hamburger-menu");
+  const dropdownContent = document.querySelector(".dropdown-content");
+  if (hamburgerMenu && dropdownContent) {
+    hamburgerMenu.addEventListener("click", () => {
+      dropdownContent.classList.toggle("show");
+      hamburgerMenu.classList.toggle("change");
+    });
+  }
+
+  // show beta message for disabled features
+  const disabledFeatures = document.querySelectorAll(".disabled-feature");
+  disabledFeatures.forEach((element) => {
+    element.addEventListener("click", showBetaTestMessage);
+  });
+
+  //close the dropdown if the user clicks outside of it
+  window.onclick = function (event) {
+    if (
+      !event.target.matches(".hamburger-menu") &&
+      !event.target.matches(".bar1") &&
+      !event.target.matches(".bar2") &&
+      !event.target.matches(".bar3")
+    ) {
+      if (dropdownContent.classList.contains("show")) {
+        dropdownContent.classList.remove("show");
+        hamburgerMenu.classList.remove("change");
+      }
+    }
+  };
 });

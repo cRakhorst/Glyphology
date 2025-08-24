@@ -118,6 +118,30 @@
                     <img src="/assets/pictures/Flower.png" alt="Flower" id="flower">
                 </div>
                 <img src="/assets/pictures/eda-note.png" alt="eda-note" id="eda-note">
+                <div class="hamburger-menu">
+                    <div class="bar1"></div>
+                    <div class="bar2"></div>
+                    <div class="bar3"></div>
+                </div>
+                <div class="dropdown-content">
+                    <div class="top-dropdown">
+                        <a href="/home">Home</a>
+                        <a href="/login">Login</a>
+                        <a href="/login">Register</a>
+                        <a href="/glyphs">Create Glyph</a>
+                        <a href="#" class="disabled-feature">Create Combo</a>
+                        <a href="/glyph">Popular Glyphs</a>
+                        <a href="#" class="disabled-feature">Popular Combos</a>
+                        <a href="/favorite-glyphs">Favorite Glyphs</a>
+                        <a href="#" class="disabled-feature">Favorite Combos</a>
+                        <a href="#" class="disabled-feature">My Glyphs</a>
+                        <a href="#" class="disabled-feature">My Combos</a>
+                    </div>
+                    <div class="bottom-dropdown">
+                        <a href="https://discord.gg/Fc5hQ2MMeJ" target="_blank">Discord</a>
+                        <a href="https://www.paypal.com/ncp/payment/88MRBHCDVM8Q2" target="_blank">Donate</a>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="table-bottom"></div>

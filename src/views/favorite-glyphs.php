@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glypholagy</title>
-    <link rel="stylesheet" href="/css/glyphs.css">
+    <link rel="stylesheet" href="/css/favorite-glyphs.css">
 </head>
 
 <body>
@@ -62,11 +62,13 @@ if (!isset($_SESSION['user_id'])) {
             </div>
             <div class="middle">
                 <div class="left-page" id="page">
+                    <div class="sticky-notes">
+                        <img src="/assets/pictures/pink-sticky-note-front.png" alt="pink sticky note front" id="sticky-note-front">
+                        <p id="front-sticky-note-text">Popular</p>
+                    </div>
                     <div class="header">
-                        <?php
-                        $glyph = $db->getLatestGlyph();
-                        echo "<h1 id='glyph-title'>" . htmlspecialchars($glyph['title']) . "</h1>"; ?>
-                        <p id="inventor">Created by: <?php echo htmlspecialchars($glyph['username']); ?></p>
+                        <h1 id="glyph-title"></h1>
+                        <p id="inventor"></p>
                     </div>
                     <div class="back-arrow">
                         <div class="line-1"></div>
@@ -77,8 +79,9 @@ if (!isset($_SESSION['user_id'])) {
                     </div>
                     <div class="footer">
                         <p id="info">Description:</p>
-                        <p id="description"><?php $glyph = $db->getLatestGlyph();
-                                            echo htmlspecialchars($glyph['description']); ?></p>
+                        <p id="description"></p>
+                        <img src="/assets/pictures/heart-icon.png" alt="heart icon" id="heart-icon">
+                        <p id="like-count"></p>
                     </div>
                 </div>
                 <div class="rings">
@@ -94,70 +97,35 @@ if (!isset($_SESSION['user_id'])) {
                     <div id="ring"></div>
                 </div>
                 <div class="right-page" id="page">
-                    <div class="header">
-                        <div class="top">
-                            <p id="header-text">Title: </p>
-                            <p id="characters">0/30</p>
-                        </div>
-                        <input type="text" id="title">
+                    <div class="sticky-notes-right">
+                        <img src="/assets/pictures/green-sticky-note-front.png" alt="green sticky note front" id="sticky-note-front">
+                        <p id="back-sticky-note-text">Favorites</p>
+                        <p id="back-sticky-note-text">Create</p>
                     </div>
-
-                    <div class="content">
-                        <canvas id="combo-canvas"></canvas>
-                        <div class="choose">
-                            <img src="/assets/pictures/pin.png" alt="pin" id="pin">
-                            <div class="top-choose">
-                                <p id="choose-text">Add a node:</p>
-                                <p id="cross">X</p>
-                            </div>
-                            <p id="line">Straight line</p>
-                            <p id="curved-line">Curved line</p>
-                            <p id="glyph">Glyph</p>
-                            <p id="circle">Circle</p>
-                        </div>
+                    <div class="header-right">
+                        <h1 id="glyph-title-right"></h1>
+                        <p id="inventor-right"></p>
                     </div>
                     <div class="forward-arrow">
                         <div class="line-1"></div>
                         <div class="line-2"></div>
                     </div>
-                    <div class="done-creating">
-                        <img src="/assets/pictures/pin.png" id="pin-creating" alt="pin">
-                        <p id="done-text">Are you done creating?</p>
-                        <div class="buttons">
-                            <button id="done">Yes!</button>
-                            <button id="not-done">Keep thinking</button>
-                        </div>
+                    <div class="content-right">
+                        <canvas id="display-canvas-right"></canvas>
                     </div>
-                    <div class="footer">
-                        <div class="top">
-                            <p id="header-text">Description: </p>
-                            <p id="characters-description">0/150</p>
-                        </div>
-                        <textarea id="description-custom"></textarea>
-                        <div class="images">
-                            <img src="/assets/pictures/Signature.png" alt="signature" id="signature">
-                            <div class="right">
-                                <div class="delete-confirmation">
-                                    <img src="/assets/pictures/pin.png" alt="pin" id="pin-delete">
-                                    <p id="delete-text">Are you sure you want to delete your creation?</p>
-                                    <div class="checkmark">
-                                        <div class="check-line1"></div>
-                                        <div class="check-line2"></div>
-                                    </div>
-                                </div>
-                                <img src="/assets/pictures/magnifying-glass.png" alt="magnifying glass" id="magnifying-glass">
-                                <img src="/assets/pictures/eraser.png" alt="eraser" id="eraser">
-                                <img src="/assets/pictures/trash_can.png" alt="trash can" id="trash-can">
-                            </div>
-                        </div>
+                    <div class="footer-right">
+                        <p id="info-right">Description:</p>
+                        <p id="description-right"></p>
+                        <img src="/assets/pictures/heart-icon.png" alt="heart icon" id="heart-icon-right">
+                        <p id="like-count-right"></p>
                     </div>
                 </div>
             </div>
             <div class="right">
                 <img src="/assets/pictures/Pencil.png" alt="Pencil" id="pencil">
                 <img src="/assets/pictures/hexsquad.jpg" alt="hexsquad" id="hexsquad">
-                <img src="assets/pictures/luz-vee.jpg" alt="luz-vee" id="luz-vee">
-                <img src="assets/pictures/giraffes.png" alt="giraffes" id="giraffes">
+                <img src="/assets/pictures/luz-vee.jpg" alt="luz-vee" id="luz-vee">
+                <img src="/assets/pictures/giraffes.png" alt="giraffes" id="giraffes">
                 <img src="/assets/pictures/king-note.png" alt="king-note" id="king-note">
                 <img src="/assets/pictures/stringbean.png" alt="stringbean" id="stringbean">
                 <div class="plant-glyph-note">
@@ -221,7 +189,7 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </div>
 
-    <script src="/js/glyphs.js"></script>
+    <script src="/js/favorite-glyphs.js"></script>
 </body>
 
 </html>

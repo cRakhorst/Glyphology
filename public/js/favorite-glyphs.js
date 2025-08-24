@@ -1,5 +1,5 @@
-let currentPosition = 0; // Global variable to track current glyph position
-let totalGlyphCount = 0; // Global variable to track total number of glyphs
+let currentPosition = 0;
+let totalGlyphCount = 0;
 
 function showBetaTestMessage() {
   document.getElementById("error-message").textContent =
@@ -28,14 +28,15 @@ function initializeDisplayCanvas() {
   }
 
   // Fetch total count first, then load glyphs
-  fetchTotalGlyphCount().then(() => {
+  fetchAllFavoriteGlyphs().then(() => {
     fetchAndDisplayBothGlyphs();
+    updateNavigationState();
   });
 }
 
-async function fetchTotalGlyphCount() {
+async function fetchAllFavoriteGlyphs() {
   try {
-    const response = await fetch("/api/get-total-glyphs.php", {
+    const response = await fetch("/api/get-favorite-glyphs.php", {
       method: "GET",
       credentials: "same-origin",
       headers: {
@@ -76,7 +77,7 @@ function fetchAndDisplayBothGlyphs() {
 
 function fetchGlyphFromPosition(ctx, canvas, position, side = "left") {
   // Fetch glyph from specific position in the array
-  const apiUrl = `/api/get-glyph-from-position.php?position=${position}`;
+  const apiUrl = `/api/get-favorite-glyphs.php?position=${position}`;
 
   fetch(apiUrl, {
     method: "GET",
@@ -343,7 +344,36 @@ async function toggleGlyphFavorite(heartIcon, glyphId, likeCountElementId) {
   }
 }
 
+function updateNavigationState() {
+  const backArrow = document.querySelector(".back-arrow");
+  const forwardArrow = document.querySelector(".forward-arrow");
+
+  if (backArrow) {
+    // Disable back arrow if at the beginning
+    if (currentPosition <= 0) {
+      backArrow.style.opacity = "0.3";
+      backArrow.style.pointerEvents = "none";
+    } else {
+      backArrow.style.opacity = "1";
+      backArrow.style.pointerEvents = "auto";
+    }
+  }
+
+  if (forwardArrow) {
+    // Disable forward arrow if at or near the end
+    if (currentPosition + 2 >= totalGlyphCount) {
+      forwardArrow.style.opacity = "0.3";
+      forwardArrow.style.pointerEvents = "none";
+    } else {
+      forwardArrow.style.opacity = "1";
+      forwardArrow.style.pointerEvents = "auto";
+    }
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(initializeDisplayCanvas, 100);
+
   document.querySelector(".glyphs").addEventListener("click", function () {
     window.location.href = "glyphs";
   });
@@ -351,7 +381,32 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelector(".combos").addEventListener("click", function () {
     showBetaTestMessage();
   });
-  setTimeout(initializeDisplayCanvas, 100);
+
+  const popularNoteGlyphImg = document.querySelector(".sticky-notes img");
+  const popularNoteText = document.querySelector(".sticky-notes p");
+  const favoritesNoteGlyphImg = document.querySelector(
+    ".sticky-notes-right img"
+  );
+  const favoritesNoteText = document.querySelector(".sticky-notes-right p");
+  const createNoteText = document.querySelector(
+    ".sticky-notes-right p:nth-child(3)"
+  );
+
+  popularNoteGlyphImg.addEventListener("click", function () {
+    window.location.href = "glyph";
+  });
+  popularNoteText.addEventListener("click", function () {
+    window.location.href = "glyph";
+  });
+  favoritesNoteGlyphImg.addEventListener("click", function () {
+    window.location.href = "favorite-glyphs";
+  });
+  favoritesNoteText.addEventListener("click", function () {
+    window.location.href = "favorite-glyphs";
+  });
+    createNoteText.addEventListener("click", function () {
+    window.location.href = "glyphs";
+  });
 
   //hamburger menu click handler
   const hamburgerMenu = document.querySelector(".hamburger-menu");
@@ -383,28 +438,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   };
-  const popularNoteGlyphImg = document.querySelector(".sticky-notes img");
-  const popularNoteText = document.querySelector(".sticky-notes p");
-  const favoritesNoteGlyphImg = document.querySelector(
-    ".sticky-notes-right img"
-  );
-  const favoritesNoteText = document.querySelector(".sticky-notes-right p");
-  const createNoteText = document.querySelector(
-    ".sticky-notes-right p:nth-child(2)"
-  );
-
-  popularNoteGlyphImg.addEventListener("click", function () {
-    window.location.href = "glyph";
-  });
-  popularNoteText.addEventListener("click", function () {
-    window.location.href = "glyph";
-  });
-  favoritesNoteText.addEventListener("click", function () {
-    window.location.href = "favorite-glyphs";
-  });
-  createNoteText.addEventListener("click", function () {
-    window.location.href = "glyphs";
-  });
 
   // Left heart icon click handler
   document

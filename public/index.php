@@ -17,6 +17,7 @@ $routes = [
     'glyphs' => 'glyphs.php',
     'admin' => 'admin.php',
     'glyph' => 'show-glyph.php',
+    'favorite-glyphs' => 'favorite-glyphs.php',
 ];
 
 $db = new Database();

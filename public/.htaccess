@@ -7,7 +7,8 @@ RewriteRule ^api/register$ api/register.php [L,NC]
 RewriteRule ^api/save_glyph$ api/save_glyph.php [L,NC]
 RewriteRule ^api/get_latest_glyph_components$ api/get_latest_glyph_components.php [L,NC]
 RewriteRule ^api/show-glyph-from-id.php$ api/show-glyph-from-id.php [L,NC]
-RewriteRule ^api/get-glyphs-array.php$ api/get-glyphs-array.php [L,NC]
+RewriteRule ^api/get-glyph-from-position.php$ api/get-glyph-from-position.php [L,NC]
+RewriteRule ^api/get-favorite-glyphs.php$ api/get-favorite-glyphs.php [L,NC]
 
 # Sta toegang toe tot bestaande bestanden en mappen
 RewriteCond %{REQUEST_FILENAME} -f [OR]

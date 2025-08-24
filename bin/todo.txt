@@ -2,10 +2,7 @@
 
 BETA TEST MUST HAVE
 MAKE AN ADMIN PAGE
-make a favorites page for glyphs
-set up discord server
-fix redirects
-add menu to all pages
+make a script that resets all the logs every 48 (server) hours
 
 SHOULD HAVE
 the user should have the ability to edit their own glyphs
@@ -49,3 +46,7 @@ make an ai that could give a name and description for a glyph or combo when the 
 1. sort glyphs in likes
 1. make a hamburger menu in the corner for (donation, discord and easier navigation)
 1. make a discord server
+1. set up discord server
+1. make a favorites page for glyphs
+1. fix redirects
+1. add menu to all pages
