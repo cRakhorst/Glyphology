@@ -8,6 +8,13 @@ session_start();
 require_once __DIR__ . '/../src/classes/autoloader.php';
 include __DIR__ . '/../src/classes/Database.php';
 include __DIR__ . '/../src/classes/functions.php';
+include __DIR__ . '/../src/classes/LogReset.php';
+try {
+    $logReset = new LogReset();
+    $logReset->run();
+} catch (Exception $e) {
+    error_log("LogReset error: " . $e->getMessage());
+}
 
 $routes = [
     'home' => 'home.php',
