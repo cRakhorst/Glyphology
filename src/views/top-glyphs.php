@@ -1,6 +1,6 @@
 <?php
 if (!isset($_SESSION['user_id'])) {
-  echo "<script>window.location.href = '/login';</script>";
+    echo "<script>window.location.href = '/login';</script>";
 }
 ?>
 
@@ -150,6 +150,9 @@ if (!isset($_SESSION['user_id'])) {
                         <a href="#" class="disabled-feature">Favorite Combos</a>
                         <a href="#" class="disabled-feature">My Glyphs</a>
                         <a href="#" class="disabled-feature">My Combos</a>
+                        <?php if (isAdmin()): ?>
+                            <a href="/admin">Admin Panel</a>
+                        <?php endif; ?>
                     </div>
                     <div class="bottom-dropdown">
                         <a href="https://discord.gg/Fc5hQ2MMeJ" target="_blank">Discord</a>
