@@ -38,6 +38,13 @@ if ($baseDir !== '/' && strpos($path, $baseDir) === 0) {
     $path = substr($path, strlen($baseDir));
 }
 
+// block API calls from going through the view router
+if (strpos($path, 'api/') === 0) {
+    http_response_code(404);
+    echo json_encode(["success" => false, "message" => "Invalid API access"]);
+    exit;
+}
+
 $path = trim($path, '/');
 $parts = explode('/', $path);
 $page = $parts[0] ?? '';

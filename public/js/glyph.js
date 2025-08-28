@@ -178,10 +178,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (data.success) {
           // Toggle heart icon
-          if (heartIcon.src.endsWith("/assets/pictures/heart-filled.png")) {
-            heartIcon.src = "/assets/pictures/heart-icon.png";
+          if (heartIcon.src.endsWith("assets/pictures/heart-filled.png")) {
+            heartIcon.src = "assets/pictures/heart-icon.png";
           } else {
-            heartIcon.src = "/assets/pictures/heart-filled.png";
+            heartIcon.src = "assets/pictures/heart-filled.png";
           }
 
           // Update likes count if it exists on the page

@@ -1,6 +1,6 @@
 <?php
 if (!isAdmin()) {
-    header('Location: /login');
+    header('Location: login');
     exit();
 }
 ?>

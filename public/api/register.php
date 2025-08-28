@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../../src/classes/autoloader.php';
 
 header('Content-Type: application/json');
-$logDir = realpath(__DIR__ . '/../../logs');
+$logDir = realpath(__DIR__ . '../../logs');
 if ($logDir && is_dir($logDir) && is_writable($logDir)) {
     ini_set('error_log', $logDir . '/register.log');
 }
@@ -29,7 +29,7 @@ try {
 } catch (Exception $e) {
     echo json_encode([
         'success' => false,
-        'message' => $e->getMessage()
+        'message' => $e->getMessage() . ' (Request Method: ' . $_SERVER['REQUEST_METHOD'] . ')'
     ]);
     error_log("Error: " . $e->getMessage());
 }

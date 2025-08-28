@@ -26,7 +26,7 @@ function initializeDisplayCanvas() {
 }
 
 function fetchAndDisplayLatestGlyph(ctx, canvas) {
-  fetch("api/get_latest_glyph_components", {
+  fetch("/api/get_latest_glyph_components", {
     method: "GET",
     credentials: "same-origin",
   })
@@ -1418,7 +1418,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     console.log("Sending data:", data);
 
-    fetch("api/save_glyph", {
+    fetch("/api/save_glyph", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,6 +1,7 @@
 @font-face {
   font-family: "glypholagy";
-  src: url(/assets/fonts/IntrudingCat.ttf) format("truetype");
+  src: url(../assets/fonts/IntrudingCat.ttf) format("truetype");
+  font-display: swap;
 }
 
 * {

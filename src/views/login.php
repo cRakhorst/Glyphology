@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glypholagy</title>
-    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="css/login.css">
 </head>
 
 <body>
@@ -14,12 +14,12 @@
         <div class="table-top">
             <div class="left">
                 <div class="top-left">
-                    <img src="/assets/pictures/grom-polaroid.jpg" alt="grom" id="grom-polaroid">
-                    <img src="/assets/pictures/glyph-polaroid.jpg" alt="glyph" id="glyph-polaroid">
-                    <img src="/assets/pictures/milkshake-polaroid.jpg" alt="milkshake" id="milkshake-polaroid">
-                    <img src="/assets/pictures/oops-polaroid.jpg" alt="oops" id="oops-polaroid">
-                    <img src="/assets/pictures/amity-note.png" alt="amity-note" id="amity-note">
-                    <img src="/assets/pictures/glyph-note.png" alt="glyph-note" id="glyph-note">
+                    <img src="assets/pictures/grom-polaroid.jpg" alt="grom" id="grom-polaroid">
+                    <img src="assets/pictures/glyph-polaroid.jpg" alt="glyph" id="glyph-polaroid">
+                    <img src="assets/pictures/milkshake-polaroid.jpg" alt="milkshake" id="milkshake-polaroid">
+                    <img src="assets/pictures/oops-polaroid.jpg" alt="oops" id="oops-polaroid">
+                    <img src="assets/pictures/amity-note.png" alt="amity-note" id="amity-note">
+                    <img src="assets/pictures/glyph-note.png" alt="glyph-note" id="glyph-note">
                 </div>
                 <div class="bottom-left">
                     <div class="glyphs notebook">
@@ -107,17 +107,17 @@
                 </div>
             </div>
             <div class="right">
-                <img src="/assets/pictures/Pencil.png" alt="Pencil" id="pencil">
-                <img src="/assets/pictures/hexsquad.jpg" alt="hexsquad" id="hexsquad">
+                <img src="assets/pictures/Pencil.png" alt="Pencil" id="pencil">
+                <img src="assets/pictures/hexsquad.jpg" alt="hexsquad" id="hexsquad">
                 <img src="assets/pictures/luz-vee.jpg" alt="luz-vee" id="luz-vee">
                 <img src="assets/pictures/giraffes.png" alt="giraffes" id="giraffes">
-                <img src="/assets/pictures/king-note.png" alt="king-note" id="king-note">
-                <img src="/assets/pictures/stringbean.png" alt="stringbean" id="stringbean">
+                <img src="assets/pictures/king-note.png" alt="king-note" id="king-note">
+                <img src="assets/pictures/stringbean.png" alt="stringbean" id="stringbean">
                 <div class="plant-glyph-note">
-                    <img src="/assets/pictures/Plant-glyph.png" alt="Plant Glyph" id="plant-glyph">
-                    <img src="/assets/pictures/Flower.png" alt="Flower" id="flower">
+                    <img src="assets/pictures/Plant-glyph.png" alt="Plant Glyph" id="plant-glyph">
+                    <img src="assets/pictures/Flower.png" alt="Flower" id="flower">
                 </div>
-                <img src="/assets/pictures/eda-note.png" alt="eda-note" id="eda-note">
+                <img src="assets/pictures/eda-note.png" alt="eda-note" id="eda-note">
                 <div class="hamburger-menu">
                     <div class="bar1"></div>
                     <div class="bar2"></div>
@@ -125,19 +125,19 @@
                 </div>
                 <div class="dropdown-content">
                     <div class="top-dropdown">
-                        <a href="/home">Home</a>
-                        <a href="/login">Login</a>
-                        <a href="/login">Register</a>
-                        <a href="/glyphs">Create Glyph</a>
+                        <a href="home">Home</a>
+                        <a href="login">Login</a>
+                        <a href="login">Register</a>
+                        <a href="glyphs">Create Glyph</a>
                         <a href="#" class="disabled-feature">Create Combo</a>
-                        <a href="/glyph">Popular Glyphs</a>
+                        <a href="glyph">Popular Glyphs</a>
                         <a href="#" class="disabled-feature">Popular Combos</a>
-                        <a href="/favorite-glyphs">Favorite Glyphs</a>
+                        <a href="favorite-glyphs">Favorite Glyphs</a>
                         <a href="#" class="disabled-feature">Favorite Combos</a>
                         <a href="#" class="disabled-feature">My Glyphs</a>
                         <a href="#" class="disabled-feature">My Combos</a>
                         <?php if (isAdmin()): ?>
-                            <a href="/admin">Admin Panel</a>
+                            <a href="admin">Admin Panel</a>
                         <?php endif; ?>
                     </div>
                     <div class="bottom-dropdown">
@@ -150,7 +150,7 @@
         <div class="table-bottom"></div>
     </div>
     <div class="floor">
-        <img src="/assets/pictures/Failed-glyph.png" alt="Failed Glyph" id="failed-glyph">
+        <img src="assets/pictures/Failed-glyph.png" alt="Failed Glyph" id="failed-glyph">
         <?php
         ghostPicture();
         ?>
@@ -177,7 +177,7 @@
         </div>
     </div>
 
-    <script src="/js/login.js"></script>
+    <script src="js/login.js"></script>
 </body>
 
 </html>

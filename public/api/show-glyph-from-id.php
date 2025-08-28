@@ -2,8 +2,7 @@
 session_start();
 header('Content-Type: application/json');
 
-// Include the Database class
-require_once '../../src/classes/autoloader.php';
+require_once __DIR__ . '/../../src/classes/autoloader.php';
 
 try {
     // Extract glyph ID from URL (after the last /)

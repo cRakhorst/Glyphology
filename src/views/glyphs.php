@@ -1,6 +1,6 @@
 <?php
 if (!isset($_SESSION['user_id'])) {
-  echo "<script>window.location.href = '/login';</script>";
+  echo "<script>window.location.href = 'login';</script>";
 }
 ?>
 
@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glypholagy</title>
-    <link rel="stylesheet" href="/css/glyphs.css">
+    <link rel="stylesheet" href="css/glyphs.css">
 </head>
 
 <body>
@@ -20,12 +20,12 @@ if (!isset($_SESSION['user_id'])) {
         <div class="table-top">
             <div class="left">
                 <div class="top-left">
-                    <img src="/assets/pictures/grom-polaroid.jpg" alt="grom" id="grom-polaroid">
-                    <img src="/assets/pictures/glyph-polaroid.jpg" alt="glyph" id="glyph-polaroid">
-                    <img src="/assets/pictures/milkshake-polaroid.jpg" alt="milkshake" id="milkshake-polaroid">
-                    <img src="/assets/pictures/oops-polaroid.jpg" alt="oops" id="oops-polaroid">
-                    <img src="/assets/pictures/amity-note.png" alt="amity-note" id="amity-note">
-                    <img src="/assets/pictures/glyph-note.png" alt="glyph-note" id="glyph-note">
+                    <img src="assets/pictures/grom-polaroid.jpg" alt="grom" id="grom-polaroid">
+                    <img src="assets/pictures/glyph-polaroid.jpg" alt="glyph" id="glyph-polaroid">
+                    <img src="assets/pictures/milkshake-polaroid.jpg" alt="milkshake" id="milkshake-polaroid">
+                    <img src="assets/pictures/oops-polaroid.jpg" alt="oops" id="oops-polaroid">
+                    <img src="assets/pictures/amity-note.png" alt="amity-note" id="amity-note">
+                    <img src="assets/pictures/glyph-note.png" alt="glyph-note" id="glyph-note">
                 </div>
                 <div class="bottom-left">
                     <div class="glyphs notebook">
@@ -105,14 +105,14 @@ if (!isset($_SESSION['user_id'])) {
                     <div class="content">
                         <canvas id="combo-canvas"></canvas>
                         <div class="choose">
-                            <img src="/assets/pictures/pin.png" alt="pin" id="pin">
+                            <img src="assets/pictures/pin.png" alt="pin" id="pin">
                             <div class="top-choose">
                                 <p id="choose-text">Add a node:</p>
                                 <p id="cross">X</p>
                             </div>
                             <p id="line">Straight line</p>
                             <p id="curved-line">Curved line</p>
-                            <p id="glyph">Glyph</p>
+                            <!-- <p id="glyph">Glyph</p> -->
                             <p id="circle">Circle</p>
                         </div>
                     </div>
@@ -121,7 +121,7 @@ if (!isset($_SESSION['user_id'])) {
                         <div class="line-2"></div>
                     </div>
                     <div class="done-creating">
-                        <img src="/assets/pictures/pin.png" id="pin-creating" alt="pin">
+                        <img src="assets/pictures/pin.png" id="pin-creating" alt="pin">
                         <p id="done-text">Are you done creating?</p>
                         <div class="buttons">
                             <button id="done">Yes!</button>
@@ -135,36 +135,36 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                         <textarea id="description-custom"></textarea>
                         <div class="images">
-                            <img src="/assets/pictures/Signature.png" alt="signature" id="signature">
+                            <img src="assets/pictures/Signature.png" alt="signature" id="signature">
                             <div class="right">
                                 <div class="delete-confirmation">
-                                    <img src="/assets/pictures/pin.png" alt="pin" id="pin-delete">
+                                    <img src="assets/pictures/pin.png" alt="pin" id="pin-delete">
                                     <p id="delete-text">Are you sure you want to delete your creation?</p>
                                     <div class="checkmark">
                                         <div class="check-line1"></div>
                                         <div class="check-line2"></div>
                                     </div>
                                 </div>
-                                <img src="/assets/pictures/magnifying-glass.png" alt="magnifying glass" id="magnifying-glass">
-                                <img src="/assets/pictures/eraser.png" alt="eraser" id="eraser">
-                                <img src="/assets/pictures/trash_can.png" alt="trash can" id="trash-can">
+                                <img src="assets/pictures/magnifying-glass.png" alt="magnifying glass" id="magnifying-glass">
+                                <img src="assets/pictures/eraser.png" alt="eraser" id="eraser">
+                                <img src="assets/pictures/trash_can.png" alt="trash can" id="trash-can">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="right">
-                <img src="/assets/pictures/Pencil.png" alt="Pencil" id="pencil">
-                <img src="/assets/pictures/hexsquad.jpg" alt="hexsquad" id="hexsquad">
+                <img src="assets/pictures/Pencil.png" alt="Pencil" id="pencil">
+                <img src="assets/pictures/hexsquad.jpg" alt="hexsquad" id="hexsquad">
                 <img src="assets/pictures/luz-vee.jpg" alt="luz-vee" id="luz-vee">
                 <img src="assets/pictures/giraffes.png" alt="giraffes" id="giraffes">
-                <img src="/assets/pictures/king-note.png" alt="king-note" id="king-note">
-                <img src="/assets/pictures/stringbean.png" alt="stringbean" id="stringbean">
+                <img src="assets/pictures/king-note.png" alt="king-note" id="king-note">
+                <img src="assets/pictures/stringbean.png" alt="stringbean" id="stringbean">
                 <div class="plant-glyph-note">
-                    <img src="/assets/pictures/Plant-glyph.png" alt="Plant Glyph" id="plant-glyph">
-                    <img src="/assets/pictures/Flower.png" alt="Flower" id="flower">
+                    <img src="assets/pictures/Plant-glyph.png" alt="Plant Glyph" id="plant-glyph">
+                    <img src="assets/pictures/Flower.png" alt="Flower" id="flower">
                 </div>
-                <img src="/assets/pictures/eda-note.png" alt="eda-note" id="eda-note">
+                <img src="assets/pictures/eda-note.png" alt="eda-note" id="eda-note">
                 <div class="hamburger-menu">
                     <div class="bar1"></div>
                     <div class="bar2"></div>
@@ -172,19 +172,19 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
                 <div class="dropdown-content">
                     <div class="top-dropdown">
-                        <a href="/home">Home</a>
-                        <a href="/login">Login</a>
-                        <a href="/login">Register</a>
-                        <a href="/glyphs">Create Glyph</a>
+                        <a href="home">Home</a>
+                        <a href="login">Login</a>
+                        <a href="login">Register</a>
+                        <a href="glyphs">Create Glyph</a>
                         <a href="#" class="disabled-feature">Create Combo</a>
-                        <a href="/glyph">Popular Glyphs</a>
+                        <a href="glyph">Popular Glyphs</a>
                         <a href="#" class="disabled-feature">Popular Combos</a>
-                        <a href="/favorite-glyphs">Favorite Glyphs</a>
+                        <a href="favorite-glyphs">Favorite Glyphs</a>
                         <a href="#" class="disabled-feature">Favorite Combos</a>
                         <a href="#" class="disabled-feature">My Glyphs</a>
                         <a href="#" class="disabled-feature">My Combos</a>
                         <?php if (isAdmin()): ?>
-                            <a href="/admin">Admin Panel</a>
+                            <a href="admin">Admin Panel</a>
                         <?php endif; ?>
                     </div>
                     <div class="bottom-dropdown">
@@ -197,7 +197,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="table-bottom"></div>
     </div>
     <div class="floor">
-        <img src="/assets/pictures/Failed-glyph.png" alt="Failed Glyph" id="failed-glyph">
+        <img src="assets/pictures/Failed-glyph.png" alt="Failed Glyph" id="failed-glyph">
         <?php
         ghostPicture();
         ?>
@@ -224,7 +224,7 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </div>
 
-    <script src="/js/glyphs.js"></script>
+    <script src="js/glyphs.js"></script>
 </body>
 
 </html>

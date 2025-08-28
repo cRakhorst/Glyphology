@@ -196,8 +196,8 @@ function updateGlyphInfo(data, suffix) {
   // Update heart icon (you'll need to add is_favorited to your PHP response)
   if (heartIcon) {
     heartIcon.src = data.is_favorited
-      ? "/assets/pictures/heart-filled.png"
-      : "/assets/pictures/heart-icon.png";
+      ? "assets/pictures/heart-filled.png"
+      : "assets/pictures/heart-icon.png";
   }
 }
 
@@ -321,10 +321,10 @@ async function toggleGlyphFavorite(heartIcon, glyphId, likeCountElementId) {
 
     if (data.success) {
       // Toggle heart icon
-      if (heartIcon.src.endsWith("/assets/pictures/heart-filled.png")) {
-        heartIcon.src = "/assets/pictures/heart-icon.png";
+      if (heartIcon.src.endsWith("assets/pictures/heart-filled.png")) {
+        heartIcon.src = "assets/pictures/heart-icon.png";
       } else {
-        heartIcon.src = "/assets/pictures/heart-filled.png";
+        heartIcon.src = "assets/pictures/heart-filled.png";
       }
 
       // Update likes count if it exists on the page

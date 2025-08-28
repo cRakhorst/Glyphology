@@ -1,19 +1,20 @@
-# Zet URL rewriting aan
 RewriteEngine On
 
-# Route voor API endpoints
+# --- API ROUTES ---
 RewriteRule ^api/login$ api/login.php [L,NC]
 RewriteRule ^api/register$ api/register.php [L,NC]
 RewriteRule ^api/save_glyph$ api/save_glyph.php [L,NC]
 RewriteRule ^api/get_latest_glyph_components$ api/get_latest_glyph_components.php [L,NC]
-RewriteRule ^api/show-glyph-from-id.php$ api/show-glyph-from-id.php [L,NC]
-RewriteRule ^api/get-glyph-from-position.php$ api/get-glyph-from-position.php [L,NC]
-RewriteRule ^api/get-favorite-glyphs.php$ api/get-favorite-glyphs.php [L,NC]
+RewriteRule ^api/show-glyph-from-id$ api/show-glyph-from-id.php [L,NC]
+RewriteRule ^api/get-glyph-from-position$ api/get-glyph-from-position.php [L,NC]
+RewriteRule ^api/get-favorite-glyphs$ api/get-favorite-glyphs.php [L,NC]
+RewriteRule ^api/toggle_glyph_favorite$ api/toggle_glyph_favorite.php [L,NC]
+RewriteRule ^api/get-total-glyphs$ api/get-total-glyphs.php [L,NC]
 
-# Sta toegang toe tot bestaande bestanden en mappen
+# --- STAAT TOEGANG TOE tot echte bestanden en mappen ---
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Stuur alles anders door naar index.php
+# --- FRONTEND ROUTES ---
 RewriteRule ^ index.php [QSA,L]

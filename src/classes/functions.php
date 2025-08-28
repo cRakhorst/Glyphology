@@ -5,7 +5,7 @@ function ghostPicture() {
     if ($number !== 23062228) {
         return;
     } else {
-        echo '<img src="/assets/pictures/ghost.png" alt="Ghost" id="ghost">';
+        echo '<img src="assets/pictures/ghost.png" alt="Ghost" id="ghost">';
     }
 }
 

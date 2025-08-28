@@ -8,9 +8,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../../src/classes/autoloader.php';
 
-$logDir = realpath(__DIR__ . '/../../logs');
+$logDir = realpath(__DIR__ . '../../logs/');
 if ($logDir && is_dir($logDir) && is_writable($logDir)) {
-    ini_set('error_log', $logDir . '/save_glyph.log');
+    ini_set('error_log', $logDir . 'save_glyph.log');
 }
 
 // Add CORS headers if needed

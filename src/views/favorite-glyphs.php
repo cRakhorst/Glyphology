@@ -1,6 +1,6 @@
 <?php
 if (!isset($_SESSION['user_id'])) {
-    echo "<script>window.location.href = '/login';</script>";
+    echo "<script>window.location.href = 'login';</script>";
 }
 ?>
 
@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glypholagy</title>
-    <link rel="stylesheet" href="/css/favorite-glyphs.css">
+    <link rel="stylesheet" href="css/favorite-glyphs.css">
 </head>
 
 <body>
@@ -20,12 +20,12 @@ if (!isset($_SESSION['user_id'])) {
         <div class="table-top">
             <div class="left">
                 <div class="top-left">
-                    <img src="/assets/pictures/grom-polaroid.jpg" alt="grom" id="grom-polaroid">
-                    <img src="/assets/pictures/glyph-polaroid.jpg" alt="glyph" id="glyph-polaroid">
-                    <img src="/assets/pictures/milkshake-polaroid.jpg" alt="milkshake" id="milkshake-polaroid">
-                    <img src="/assets/pictures/oops-polaroid.jpg" alt="oops" id="oops-polaroid">
-                    <img src="/assets/pictures/amity-note.png" alt="amity-note" id="amity-note">
-                    <img src="/assets/pictures/glyph-note.png" alt="glyph-note" id="glyph-note">
+                    <img src="assets/pictures/grom-polaroid.jpg" alt="grom" id="grom-polaroid">
+                    <img src="assets/pictures/glyph-polaroid.jpg" alt="glyph" id="glyph-polaroid">
+                    <img src="assets/pictures/milkshake-polaroid.jpg" alt="milkshake" id="milkshake-polaroid">
+                    <img src="assets/pictures/oops-polaroid.jpg" alt="oops" id="oops-polaroid">
+                    <img src="assets/pictures/amity-note.png" alt="amity-note" id="amity-note">
+                    <img src="assets/pictures/glyph-note.png" alt="glyph-note" id="glyph-note">
                 </div>
                 <div class="bottom-left">
                     <div class="glyphs notebook">
@@ -63,7 +63,7 @@ if (!isset($_SESSION['user_id'])) {
             <div class="middle">
                 <div class="left-page" id="page">
                     <div class="sticky-notes">
-                        <img src="/assets/pictures/pink-sticky-note-front.png" alt="pink sticky note front" id="sticky-note-front">
+                        <img src="assets/pictures/pink-sticky-note-front.png" alt="pink sticky note front" id="sticky-note-front">
                         <p id="front-sticky-note-text">Popular</p>
                     </div>
                     <div class="header">
@@ -80,7 +80,7 @@ if (!isset($_SESSION['user_id'])) {
                     <div class="footer">
                         <p id="info">Description:</p>
                         <p id="description"></p>
-                        <img src="/assets/pictures/heart-icon.png" alt="heart icon" id="heart-icon">
+                        <img src="assets/pictures/heart-icon.png" alt="heart icon" id="heart-icon">
                         <p id="like-count"></p>
                     </div>
                 </div>
@@ -98,7 +98,7 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
                 <div class="right-page" id="page">
                     <div class="sticky-notes-right">
-                        <img src="/assets/pictures/green-sticky-note-front.png" alt="green sticky note front" id="sticky-note-front">
+                        <img src="assets/pictures/green-sticky-note-front.png" alt="green sticky note front" id="sticky-note-front">
                         <p id="back-sticky-note-text">Favorites</p>
                         <p id="back-sticky-note-text">Create</p>
                     </div>
@@ -116,18 +116,18 @@ if (!isset($_SESSION['user_id'])) {
                     <div class="footer-right">
                         <p id="info-right">Description:</p>
                         <p id="description-right"></p>
-                        <img src="/assets/pictures/heart-icon.png" alt="heart icon" id="heart-icon-right">
+                        <img src="assets/pictures/heart-icon.png" alt="heart icon" id="heart-icon-right">
                         <p id="like-count-right"></p>
                     </div>
                 </div>
             </div>
             <div class="right">
-                <img src="/assets/pictures/Pencil.png" alt="Pencil" id="pencil">
-                <img src="/assets/pictures/hexsquad.jpg" alt="hexsquad" id="hexsquad">
-                <img src="/assets/pictures/luz-vee.jpg" alt="luz-vee" id="luz-vee">
-                <img src="/assets/pictures/giraffes.png" alt="giraffes" id="giraffes">
-                <img src="/assets/pictures/king-note.png" alt="king-note" id="king-note">
-                <img src="/assets/pictures/stringbean.png" alt="stringbean" id="stringbean">
+                <img src="assets/pictures/Pencil.png" alt="Pencil" id="pencil">
+                <img src="assets/pictures/hexsquad.jpg" alt="hexsquad" id="hexsquad">
+                <img src="assets/pictures/luz-vee.jpg" alt="luz-vee" id="luz-vee">
+                <img src="assets/pictures/giraffes.png" alt="giraffes" id="giraffes">
+                <img src="assets/pictures/king-note.png" alt="king-note" id="king-note">
+                <img src="assets/pictures/stringbean.png" alt="stringbean" id="stringbean">
                 <div class="plant-glyph-note">
                     <img src="/assets/pictures/Plant-glyph.png" alt="Plant Glyph" id="plant-glyph">
                     <img src="/assets/pictures/Flower.png" alt="Flower" id="flower">
@@ -140,19 +140,19 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
                 <div class="dropdown-content">
                     <div class="top-dropdown">
-                        <a href="/home">Home</a>
-                        <a href="/login">Login</a>
-                        <a href="/login">Register</a>
-                        <a href="/glyphs">Create Glyph</a>
+                        <a href="home">Home</a>
+                        <a href="login">Login</a>
+                        <a href="login">Register</a>
+                        <a href="glyphs">Create Glyph</a>
                         <a href="#" class="disabled-feature">Create Combo</a>
-                        <a href="/glyph">Popular Glyphs</a>
+                        <a href="glyph">Popular Glyphs</a>
                         <a href="#" class="disabled-feature">Popular Combos</a>
-                        <a href="/favorite-glyphs">Favorite Glyphs</a>
+                        <a href="favorite-glyphs">Favorite Glyphs</a>
                         <a href="#" class="disabled-feature">Favorite Combos</a>
                         <a href="#" class="disabled-feature">My Glyphs</a>
                         <a href="#" class="disabled-feature">My Combos</a>
                         <?php if (isAdmin()): ?>
-                            <a href="/admin">Admin Panel</a>
+                            <a href="admin">Admin Panel</a>
                         <?php endif; ?>
                     </div>
                     <div class="bottom-dropdown">
@@ -165,7 +165,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="table-bottom"></div>
     </div>
     <div class="floor">
-        <img src="/assets/pictures/Failed-glyph.png" alt="Failed Glyph" id="failed-glyph">
+        <img src="assets/pictures/Failed-glyph.png" alt="Failed Glyph" id="failed-glyph">
         <?php
         ghostPicture();
         ?>
@@ -192,7 +192,7 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </div>
 
-    <script src="/js/favorite-glyphs.js"></script>
+    <script src="js/favorite-glyphs.js"></script>
 </body>
 
 </html>
