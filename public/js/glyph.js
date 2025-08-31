@@ -71,7 +71,12 @@ function fetchAndDisplayGlyphFromUrl(ctx, canvas) {
 function renderGlyphComponents(ctx, canvas, components) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Separate components by type
+  // Detect scale based on screen width
+  let scale = 1;
+  if (window.innerWidth <= 780) {
+    scale = 0.83; // shrink to 83%
+  }
+
   const circles = [];
   const lines = [];
   const curvedLines = [];
@@ -82,29 +87,29 @@ function renderGlyphComponents(ctx, canvas, components) {
     switch (component.type) {
       case "circle":
         circles.push({
-          x: coords[0],
-          y: coords[1],
-          radius: parseFloat(component.size),
+          x: coords[0] * scale,
+          y: coords[1] * scale,
+          radius: parseFloat(component.size) * scale,
         });
         break;
 
       case "line":
         lines.push({
-          x1: coords[0],
-          y1: coords[1],
-          x2: coords[2],
-          y2: coords[3],
+          x1: coords[0] * scale,
+          y1: coords[1] * scale,
+          x2: coords[2] * scale,
+          y2: coords[3] * scale,
         });
         break;
 
       case "curved_line":
         curvedLines.push({
-          x1: coords[0],
-          y1: coords[1],
-          x2: coords[2],
-          y2: coords[3],
-          controlX: coords[4],
-          controlY: coords[5],
+          x1: coords[0] * scale,
+          y1: coords[1] * scale,
+          x2: coords[2] * scale,
+          y2: coords[3] * scale,
+          controlX: coords[4] * scale,
+          controlY: coords[5] * scale,
         });
         break;
     }
@@ -116,7 +121,7 @@ function renderGlyphComponents(ctx, canvas, components) {
     ctx.moveTo(line.x1, line.y1);
     ctx.lineTo(line.x2, line.y2);
     ctx.strokeStyle = "black";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2 * scale; // scale stroke width too
     ctx.stroke();
   });
 
@@ -126,7 +131,7 @@ function renderGlyphComponents(ctx, canvas, components) {
     ctx.moveTo(line.x1, line.y1);
     ctx.quadraticCurveTo(line.controlX, line.controlY, line.x2, line.y2);
     ctx.strokeStyle = "black";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2 * scale;
     ctx.stroke();
   });
 
@@ -135,7 +140,7 @@ function renderGlyphComponents(ctx, canvas, components) {
     ctx.beginPath();
     ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
     ctx.strokeStyle = "black";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2 * scale;
     ctx.stroke();
   });
 }

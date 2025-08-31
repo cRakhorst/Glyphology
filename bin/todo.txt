@@ -1,14 +1,12 @@
 == BACKLOG ==
 
-BETA TEST MUST HAVE
-MAKE AN ADMIN PAGE
-
-SHOULD HAVE
-the user should have the ability to edit their own glyphs
-the user should have the ability to delete their own glyphs
-
 
 1. MUST HAVE
+make small laptop responsive
+make phone responsive
+fix sticky notes not on some pages
+the user should have the ability to edit their own glyphs
+the user should have the ability to delete their own glyphs
 have the user be able to make glyph combos
 have user be able to use liked custom glyphs to create glyph combos
 the user must have the ability to edit their own combos
@@ -16,14 +14,13 @@ like glyph combos
 sort combos in likes
 make favorites page for combos
 make all the forward and back arrows have a function
-
+make an admin page
 
 2. SHOULD HAVE
 log every error
+check every log and when an error occurs it sends a discord message in the server
 have a filter on what gets sent in the description and title (like curse words)
-make a donation button
 have a different page where you can make bigger glyph combos
-make the website responsive to all devices (problematic for really small laptops, ipads and phones)
 give the tab a logo (the left corner in every tab)
 add music
 
@@ -50,3 +47,6 @@ make an ai that could give a name and description for a glyph or combo when the 
 1. fix redirects
 1. add menu to all pages
 1. make a script that resets all the logs every 48 (server) hours
+1. make ipad responsive
+
+2. make a donation button

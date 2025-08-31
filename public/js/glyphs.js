@@ -48,7 +48,12 @@ function fetchAndDisplayLatestGlyph(ctx, canvas) {
 function renderGlyphComponents(ctx, canvas, components) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Separate components by type
+  // Detect scale based on screen width
+  let scale = 1;
+  if (window.innerWidth <= 780) {
+    scale = 0.83; // shrink to 83%
+  }
+
   const circles = [];
   const lines = [];
   const curvedLines = [];
@@ -59,29 +64,29 @@ function renderGlyphComponents(ctx, canvas, components) {
     switch (component.type) {
       case "circle":
         circles.push({
-          x: coords[0],
-          y: coords[1],
-          radius: parseFloat(component.size),
+          x: coords[0] * scale,
+          y: coords[1] * scale,
+          radius: parseFloat(component.size) * scale,
         });
         break;
 
       case "line":
         lines.push({
-          x1: coords[0],
-          y1: coords[1],
-          x2: coords[2],
-          y2: coords[3],
+          x1: coords[0] * scale,
+          y1: coords[1] * scale,
+          x2: coords[2] * scale,
+          y2: coords[3] * scale,
         });
         break;
 
       case "curved_line":
         curvedLines.push({
-          x1: coords[0],
-          y1: coords[1],
-          x2: coords[2],
-          y2: coords[3],
-          controlX: coords[4],
-          controlY: coords[5],
+          x1: coords[0] * scale,
+          y1: coords[1] * scale,
+          x2: coords[2] * scale,
+          y2: coords[3] * scale,
+          controlX: coords[4] * scale,
+          controlY: coords[5] * scale,
         });
         break;
     }
@@ -93,7 +98,7 @@ function renderGlyphComponents(ctx, canvas, components) {
     ctx.moveTo(line.x1, line.y1);
     ctx.lineTo(line.x2, line.y2);
     ctx.strokeStyle = "black";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2 * scale; // scale stroke width too
     ctx.stroke();
   });
 
@@ -103,7 +108,7 @@ function renderGlyphComponents(ctx, canvas, components) {
     ctx.moveTo(line.x1, line.y1);
     ctx.quadraticCurveTo(line.controlX, line.controlY, line.x2, line.y2);
     ctx.strokeStyle = "black";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2 * scale;
     ctx.stroke();
   });
 
@@ -112,7 +117,7 @@ function renderGlyphComponents(ctx, canvas, components) {
     ctx.beginPath();
     ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
     ctx.strokeStyle = "black";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2 * scale;
     ctx.stroke();
   });
 }
@@ -893,7 +898,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const elementToDelete = findElementUnderMouse(mouseX, mouseY);
       if (elementToDelete) {
         deleteElement(elementToDelete);
-        hoveredElement = null; // Clear hover state
+        hoveredElement = null;
 
         // Disable eraser mode after successful deletion
         eraserMode = false;
@@ -904,11 +909,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         draw();
       }
-      return; // Don't process other interactions in eraser mode
+      return;
     }
 
-    // ... rest of your existing mousedown logic remains unchanged
-    // check first for line endpoints or cirle handles, the blue dots have priority
+    const isMobileDevice = window.innerWidth <= 780;
+
+    // check first for line endpoints or circle handles, the blue dots have priority
     for (const line of lines) {
       if (isInsideCircle(mouseX, mouseY, line.x2, line.y2, 6)) {
         const circleAtEndpoint = circles.find(
@@ -917,12 +923,22 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         if (e.shiftKey) {
+          // Desktop: shift + click to drag
           draggingLine = line;
           draggingEndpoint = "end";
 
           if (circleAtEndpoint) {
             draggingLine.attachedCircle = circleAtEndpoint;
           }
+        } else if (isMobileDevice) {
+          // Mobile: distinguish between tap and drag
+          window.potentialDrag = {
+            line: line,
+            circleAtEndpoint: circleAtEndpoint,
+            startX: mouseX,
+            startY: mouseY,
+            isDragging: false,
+          };
         } else if (!circleAtEndpoint && !line.attachedCircle) {
           const endpointCircle = {
             x: line.x2,
@@ -1061,6 +1077,26 @@ document.addEventListener("DOMContentLoaded", function () {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
+    // Handle potential drag detection for mobile devices
+    if (window.potentialDrag && !window.potentialDrag.isDragging) {
+      const dragThreshold = 5; // pixels
+      const dragDistance = Math.hypot(
+        mouseX - window.potentialDrag.startX,
+        mouseY - window.potentialDrag.startY
+      );
+
+      if (dragDistance > dragThreshold) {
+        // User is dragging, not tapping
+        window.potentialDrag.isDragging = true;
+        draggingLine = window.potentialDrag.line;
+        draggingEndpoint = "end";
+
+        if (window.potentialDrag.circleAtEndpoint) {
+          draggingLine.attachedCircle = window.potentialDrag.circleAtEndpoint;
+        }
+      }
+    }
+
     // Handle eraser hover detection
     if (eraserMode) {
       const elementUnderMouse = findElementUnderMouse(mouseX, mouseY);
@@ -1114,7 +1150,45 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  canvas.addEventListener("mouseup", () => {
+  canvas.addEventListener("mouseup", (e) => {
+    // Handle potential tap vs drag for mobile devices
+    if (window.potentialDrag && !window.potentialDrag.isDragging) {
+      // This was a tap, not a drag - handle component addition
+      const line = window.potentialDrag.line;
+      const circleAtEndpoint = window.potentialDrag.circleAtEndpoint;
+
+      if (!circleAtEndpoint && !line.attachedCircle) {
+        const endpointCircle = {
+          x: line.x2,
+          y: line.y2,
+          radius: 0,
+          draggingHandle: false,
+          visible: false,
+          usedDots: [],
+          isLineEndpoint: true,
+          connectedLine: line,
+          parentLine: line,
+        };
+
+        circles.push(endpointCircle);
+        line.attachedCircle = endpointCircle;
+        activeCircle = endpointCircle;
+        activeDotIndex = null;
+        document.querySelector(".choose").style.display = "block";
+        draw();
+      } else if (line.attachedCircle && !line.attachedCircle.visible) {
+        // if the circle is already on the line endpoint, just select it
+        activeCircle = line.attachedCircle;
+        activeDotIndex = null;
+        document.querySelector(".choose").style.display = "block";
+        draw();
+      }
+    }
+
+    // Clean up potential drag state
+    window.potentialDrag = null;
+
+    // Existing cleanup
     circles.forEach((circle) => (circle.draggingHandle = false));
     draggingLine = null;
     draggingEndpoint = null;

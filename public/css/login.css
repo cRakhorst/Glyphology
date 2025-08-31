@@ -590,3 +590,23 @@ button:hover {
   position: absolute;
   right: 0px;
 }
+
+@media (max-width: 780px) {
+  #grom-polaroid,
+  #glyph-polaroid,
+  #milkshake-polaroid,
+  #oops-polaroid,
+  #amity-note,
+  #pencil,
+  #hexsquad,
+  #luz-vee,
+  #giraffes,
+  #king-note,
+  #stringbean,
+  .plant-glyph-note,
+  #eda-note,
+  .notebook,
+  #glyph-note {
+    display: none;
+  }
+}

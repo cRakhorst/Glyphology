@@ -11,7 +11,8 @@
   -webkit-user-drag: none;
 }
 
-body {
+body,
+html {
   overflow: hidden;
 }
 
@@ -157,7 +158,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: visible;
+  /* overflow: visible; */
 }
 
 #page {
@@ -179,7 +180,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  overflow: visible;
+  /* overflow: visible; */
 }
 
 .header,
@@ -721,7 +722,7 @@ body {
   position: relative;
   top: -45px;
   left: 240px;
-  z-index: 1000;
+  z-index: 999;
 }
 
 #heart-icon:hover,
@@ -759,7 +760,7 @@ body {
   height: 0px;
   position: relative;
   padding-top: 0px;
-  overflow: visible;
+  /* overflow: visible; */
   gap: 10px;
 }
 
@@ -965,4 +966,31 @@ body {
 .dropdown-content {
   position: absolute;
   right: 0px;
+}
+
+@media (max-width: 780px) {
+  #grom-polaroid,
+  #glyph-polaroid,
+  #milkshake-polaroid,
+  #oops-polaroid,
+  #amity-note,
+  #pencil,
+  #hexsquad,
+  #luz-vee,
+  #giraffes,
+  #king-note,
+  #stringbean,
+  .plant-glyph-note,
+  #eda-note,
+  .notebook,
+  #glyph-note {
+    display: none;
+  }
+
+  #display-canvas,
+  #display-canvas-right {
+    margin-top: 20px;
+    width: 218px;
+    height: 185px;
+  }
 }

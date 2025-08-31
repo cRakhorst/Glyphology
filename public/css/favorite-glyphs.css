@@ -721,7 +721,7 @@ body {
   position: relative;
   top: -45px;
   left: 240px;
-  z-index: 1000;
+  z-index: 999;
 }
 
 #heart-icon:hover,
@@ -773,7 +773,7 @@ body {
 
 .sticky-notes-right p:nth-child(2) {
   border: 0px;
-    transform: translateX(-45px) translateY(-18px);
+  transform: translateX(-45px) translateY(-18px);
 }
 
 .sticky-notes-right p:nth-child(3) {
@@ -890,4 +890,31 @@ body {
   height: auto;
   margin-top: -20px;
   right: 40px;
+}
+
+@media (max-width: 780px) {
+  #grom-polaroid,
+  #glyph-polaroid,
+  #milkshake-polaroid,
+  #oops-polaroid,
+  #amity-note,
+  #pencil,
+  #hexsquad,
+  #luz-vee,
+  #giraffes,
+  #king-note,
+  #stringbean,
+  .plant-glyph-note,
+  #eda-note,
+  .notebook,
+  #glyph-note {
+    display: none;
+  }
+
+  #display-canvas,
+  #display-canvas-right {
+    margin-top: 20px;
+    width: 218px;
+    height: 185px;
+  }
 }

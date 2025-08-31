@@ -213,7 +213,7 @@ body {
   border: 2px solid black;
   padding: 5px;
   margin-bottom: 10px;
-  z-index: 1000;
+  z-index: 998;
   display: flex;
   resize: none;
   overflow: hidden;
@@ -793,4 +793,35 @@ body {
 .dropdown-content {
   position: absolute;
   right: 0px;
+}
+
+@media (max-width: 780px) {
+  #grom-polaroid,
+  #glyph-polaroid,
+  #milkshake-polaroid,
+  #oops-polaroid,
+  #amity-note,
+  #pencil,
+  #hexsquad,
+  #luz-vee,
+  #giraffes,
+  #king-note,
+  #stringbean,
+  .plant-glyph-note,
+  #eda-note,
+  .notebook,
+  #glyph-note {
+    display: none;
+  }
+
+  #description-custom {
+    height: 30px;
+    overflow: auto;
+  }
+  #display-canvas,
+  #display-canvas-right {
+    margin-top: 20px;
+    width: 218px;
+    height: 185px;
+  }
 }
