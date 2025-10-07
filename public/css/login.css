@@ -221,7 +221,7 @@ body {
   font-size: 28px;
   border: 1px solid black;
   margin-bottom: 30px;
-  z-index: 1000;
+  z-index: 999;
 }
 
 button:hover {
@@ -607,6 +607,24 @@ button:hover {
   #eda-note,
   .notebook,
   #glyph-note {
+    display: none;
+  }
+}
+
+@media (max-width: 430px) {
+  .left-page {
+    display: none;
+  }
+
+  .rings {
+    display: none;
+  }
+
+  .forward-arrow {
+    display: none;
+  }
+
+  .chair {
     display: none;
   }
 }

@@ -651,6 +651,13 @@ body {
 }
 
 #combo-canvas {
+  touch-action: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
   border: 1px solid black;
   margin-top: 20px;
   height: 227px;
@@ -658,6 +665,7 @@ body {
 }
 
 #display-canvas {
+  touch-action: none;
   margin-top: 20px;
   width: 260px;
   height: 227px;
@@ -823,5 +831,23 @@ body {
     margin-top: 20px;
     width: 218px;
     height: 185px;
+  }
+}
+
+@media (max-width: 430px) {
+  .left-page {
+    display: none;
+  }
+
+  .rings {
+    display: none;
+  }
+
+  .forward-arrow {
+    display: none;
+  }
+
+  .chair {
+    display: none;
   }
 }

@@ -114,6 +114,21 @@ class Database
                 throw new Exception("Invalid userId: $userId (not found in glyph_users)");
             }
 
+            // step 1.5 - Validate input
+            if (strlen($title) > 30) {
+                throw new Exception("Title exceeds maximum length of 30 characters");
+            }
+            if (strlen($description) > 255) {
+                throw new Exception("Description exceeds maximum length of 255 characters");
+            }
+            if (!is_array($components) || count($components) == 0) {
+                throw new Exception("Components array is empty or invalid");
+            }
+            if (count($components) > 100) {
+                throw new Exception("Too many components: " . count($components) . " (max 100 allowed)");
+            }
+            error_log("Input validation passed: " . count($components) . " components");
+
             // step 2 - Insert glyph_custom
             $stmt = $conn->prepare("
             INSERT INTO glyph_custom (title, description, glyph_users_user_id, likes) 

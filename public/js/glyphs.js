@@ -122,6 +122,30 @@ function renderGlyphComponents(ctx, canvas, components) {
   });
 }
 
+function getEventCoordinates(e, canvas) {
+  const rect = canvas.getBoundingClientRect();
+  let clientX, clientY;
+
+  if (e.touches && e.touches.length > 0) {
+    // Touch event
+    clientX = e.touches[0].clientX;
+    clientY = e.touches[0].clientY;
+  } else if (e.changedTouches && e.changedTouches.length > 0) {
+    // Touch end event
+    clientX = e.changedTouches[0].clientX;
+    clientY = e.changedTouches[0].clientY;
+  } else {
+    // Mouse event
+    clientX = e.clientX;
+    clientY = e.clientY;
+  }
+
+  return {
+    x: clientX - rect.left,
+    y: clientY - rect.top,
+  };
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   setTimeout(initializeDisplayCanvas, 100);
   const ghostPicture = document.getElementById("ghost");
@@ -199,7 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
     draw();
   });
 
-  // == FUNCTIONS TO DELTE A COMPONENT ==
+  // == FUNCTIONS TO DELETE A COMPONENT ==
   function isNearLine(mouseX, mouseY, x1, y1, x2, y2, threshold = 8) {
     const A = mouseX - x1;
     const B = mouseY - y1;
@@ -419,160 +443,7 @@ document.addEventListener("DOMContentLoaded", function () {
       deleteAllChildren(parentElement.attachedCircle);
     }
   }
-
-  function deleteAllChildrenEnhanced(
-    parentElement,
-    visitedElements = new Set()
-  ) {
-    // Prevent infinite loops by tracking visited elements
-    if (visitedElements.has(parentElement)) {
-      return;
-    }
-    visitedElements.add(parentElement);
-
-    // Find and delete all child circles
-    for (let i = circles.length - 1; i >= 0; i--) {
-      const circle = circles[i];
-      if (circle.parent === parentElement && !visitedElements.has(circle)) {
-        // Recursively delete this circle's children first
-        deleteAllChildrenEnhanced(circle, visitedElements);
-
-        // Delete any lines that start from this child circle
-        for (let j = lines.length - 1; j >= 0; j--) {
-          if (lines[j].fromCircle === circle) {
-            deleteAllChildrenEnhanced(lines[j], visitedElements);
-            lines.splice(j, 1);
-          }
-        }
-
-        // Delete any lines attached to this child circle
-        for (let j = lines.length - 1; j >= 0; j--) {
-          if (lines[j].attachedCircle === circle) {
-            deleteAllChildrenEnhanced(lines[j], visitedElements);
-            lines.splice(j, 1);
-          }
-        }
-
-        // Remove the child circle
-        circles.splice(i, 1);
-      }
-    }
-
-    // Find and delete all child lines
-    for (let i = lines.length - 1; i >= 0; i--) {
-      const line = lines[i];
-      if (
-        (line.parentLine === parentElement ||
-          line.fromCircle === parentElement) &&
-        !visitedElements.has(line)
-      ) {
-        // Recursively delete this line's children first
-        deleteAllChildrenEnhanced(line, visitedElements);
-
-        // Delete the attached circle if it exists
-        if (line.attachedCircle) {
-          deleteAllChildrenEnhanced(line.attachedCircle, visitedElements);
-          const circleIndex = circles.indexOf(line.attachedCircle);
-          if (circleIndex > -1) {
-            circles.splice(circleIndex, 1);
-          }
-        }
-
-        // Remove the child line
-        lines.splice(i, 1);
-      }
-    }
-  }
-
-  function deleteElementWithAllChildren(elementInfo) {
-    const toDelete = new Set();
-
-    // Collect all elements that need to be deleted
-    collectAllDescendants(elementInfo.element, toDelete);
-
-    // Add the parent element itself
-    toDelete.add(elementInfo.element);
-
-    // Delete all collected elements
-    // Delete circles
-    for (let i = circles.length - 1; i >= 0; i--) {
-      if (toDelete.has(circles[i])) {
-        circles.splice(i, 1);
-      }
-    }
-
-    // Delete lines
-    for (let i = lines.length - 1; i >= 0; i--) {
-      if (toDelete.has(lines[i])) {
-        lines.splice(i, 1);
-      }
-    }
-
-    // Clean up any remaining references
-    cleanupReferences(toDelete);
-  }
-
-  function collectAllDescendants(element, toDelete, visited = new Set()) {
-    if (visited.has(element)) return;
-    visited.add(element);
-
-    // Find child circles
-    circles.forEach((circle) => {
-      if (circle.parent === element && !toDelete.has(circle)) {
-        toDelete.add(circle);
-        collectAllDescendants(circle, toDelete, visited);
-      }
-    });
-
-    // Find child lines
-    lines.forEach((line) => {
-      if (
-        (line.parentLine === element || line.fromCircle === element) &&
-        !toDelete.has(line)
-      ) {
-        toDelete.add(line);
-        collectAllDescendants(line, toDelete, visited);
-
-        // Also collect attached circles
-        if (line.attachedCircle && !toDelete.has(line.attachedCircle)) {
-          toDelete.add(line.attachedCircle);
-          collectAllDescendants(line.attachedCircle, toDelete, visited);
-        }
-      }
-    });
-
-    // For lines, also check attached circles
-    if (element.attachedCircle && !toDelete.has(element.attachedCircle)) {
-      toDelete.add(element.attachedCircle);
-      collectAllDescendants(element.attachedCircle, toDelete, visited);
-    }
-  }
-
-  function cleanupReferences(deletedElements) {
-    // Clean up any remaining references to deleted elements
-    lines.forEach((line) => {
-      if (deletedElements.has(line.parentLine)) {
-        line.parentLine = null;
-      }
-      if (deletedElements.has(line.attachedCircle)) {
-        line.attachedCircle = null;
-        line.hasAttachedElement = false;
-      }
-      if (deletedElements.has(line.fromCircle)) {
-        line.fromCircle = null;
-      }
-    });
-
-    circles.forEach((circle) => {
-      if (deletedElements.has(circle.parent)) {
-        circle.parent = null;
-      }
-      if (deletedElements.has(circle.connectedLine)) {
-        circle.connectedLine = null;
-      }
-    });
-  }
-  // == END OF FUNCTIONS TO DELTE A COMPONENT ==
+  // == END OF FUNCTIONS TO DELETE A COMPONENT ==
 
   document.getElementById("trash-can").addEventListener("click", function (e) {
     e.stopPropagation(); // Prevent the click from reaching the document
@@ -720,6 +591,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  function updateChildPositions(parentCircle) {
+    circles.forEach((child) => {
+      if (child.parent === parentCircle) {
+        const angle = (child.dotIndex * Math.PI) / 8;
+        child.x = parentCircle.x + parentCircle.radius * Math.cos(angle);
+        child.y = parentCircle.y + parentCircle.radius * Math.sin(angle);
+
+        lines.forEach((line) => {
+          if (
+            line.fromCircle === child &&
+            line.fromDotIndex === child.dotIndex
+          ) {
+            const angle = (child.dotIndex * Math.PI) / 8;
+            line.x1 = child.x + child.radius * Math.cos(angle);
+            line.y1 = child.y + child.radius * Math.sin(angle);
+          }
+        });
+
+        updateChildPositions(child);
+      }
+    });
+  }
+
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -829,6 +723,333 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // DEFINE TOUCH/MOUSE HANDLERS BEFORE THEY'RE USED
+  function handleStart(e) {
+    if (previewMode) return;
+
+    const coords = getEventCoordinates(e, canvas);
+    const mouseX = coords.x;
+    const mouseY = coords.y;
+
+    // Handle eraser mode
+    if (eraserMode) {
+      const elementToDelete = findElementUnderMouse(mouseX, mouseY);
+      if (elementToDelete) {
+        deleteElement(elementToDelete);
+        hoveredElement = null;
+
+        // Disable eraser mode after successful deletion
+        eraserMode = false;
+        const eraserButton = document.getElementById("eraser");
+        eraserButton.style.backgroundColor = "";
+        eraserButton.style.color = "";
+        canvas.style.cursor = "default";
+
+        draw();
+      }
+      return;
+    }
+
+    const isMobileDevice =
+      "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+    // Check for line endpoints or circle handles
+    for (const line of lines) {
+      if (isInsideCircle(mouseX, mouseY, line.x2, line.y2, 6)) {
+        const circleAtEndpoint = circles.find(
+          (circle) =>
+            Math.abs(circle.x - line.x2) < 5 && Math.abs(circle.y - line.y2) < 5
+        );
+
+        if (e.shiftKey || e.ctrlKey) {
+          // Desktop: shift/ctrl + click to drag
+          draggingLine = line;
+          draggingEndpoint = "end";
+
+          if (circleAtEndpoint) {
+            draggingLine.attachedCircle = circleAtEndpoint;
+          }
+        } else if (isMobileDevice) {
+          // Mobile: set up potential drag detection
+          window.potentialDrag = {
+            line: line,
+            circleAtEndpoint: circleAtEndpoint,
+            startX: mouseX,
+            startY: mouseY,
+            isDragging: false,
+            startTime: Date.now(),
+          };
+        } else if (!circleAtEndpoint && !line.attachedCircle) {
+          // Desktop: direct component addition
+          const endpointCircle = {
+            x: line.x2,
+            y: line.y2,
+            radius: 0,
+            draggingHandle: false,
+            visible: false,
+            usedDots: [],
+            isLineEndpoint: true,
+            connectedLine: line,
+            parentLine: line,
+          };
+
+          circles.push(endpointCircle);
+          line.attachedCircle = endpointCircle;
+          activeCircle = endpointCircle;
+          activeDotIndex = null;
+          document.querySelector(".choose").style.display = "block";
+          draw();
+        } else if (line.attachedCircle && !line.attachedCircle.visible) {
+          activeCircle = line.attachedCircle;
+          activeDotIndex = null;
+          document.querySelector(".choose").style.display = "block";
+          draw();
+        }
+        return;
+      }
+    }
+
+    // Check for control points
+    for (const line of lines) {
+      if (line.controlX !== undefined && line.controlY !== undefined) {
+        if (isInsideCircle(mouseX, mouseY, line.controlX, line.controlY, 8)) {
+          // Increased hit area for mobile
+          draggingControlPoint = line;
+          return;
+        }
+      }
+    }
+
+    // Check for circle handles and dots
+    for (const circle of circles) {
+      if (!circle.visible) continue;
+
+      const handleX = circle.x + circle.radius * Math.cos(HANDLE_ANGLE);
+      const handleY = circle.y + circle.radius * Math.sin(HANDLE_ANGLE);
+
+      if (isInsideCircle(mouseX, mouseY, handleX, handleY, 10)) {
+        // Increased hit area
+        circle.draggingHandle = true;
+        return;
+      }
+
+      // Check dots on circles
+      for (let i = 0; i < 16; i++) {
+        const angle = (i * Math.PI) / 8;
+        const dotX = circle.x + circle.radius * Math.cos(angle);
+        const dotY = circle.y + circle.radius * Math.sin(angle);
+
+        if (isInsideCircle(mouseX, mouseY, dotX, dotY, 8)) {
+          // Increased hit area
+          const newCircle = {
+            x: dotX,
+            y: dotY,
+            radius: 0,
+            draggingHandle: false,
+            visible: false,
+            usedDots: [],
+            parent: circle,
+            dotIndex: i,
+          };
+          circles.push(newCircle);
+          activeCircle = newCircle;
+          activeDotIndex = i;
+          document.querySelector(".choose").style.display = "block";
+          draw();
+          return;
+        }
+      }
+
+      // Check for line endpoint dragging
+      const isEndpoint = lines.some(
+        (line) =>
+          isInsideCircle(mouseX, mouseY, line.x2, line.y2, 8) &&
+          line.attachedCircle === circle
+      );
+
+      if (isEndpoint) {
+        const parentLine = lines.find((line) => line.attachedCircle === circle);
+        if (parentLine) {
+          draggingLine = parentLine;
+          draggingEndpoint = "end";
+          return;
+        }
+      }
+    }
+
+    // Check for center dots (component placement)
+    for (const circle of circles) {
+      if (
+        !circle.visible &&
+        isInsideCircle(mouseX, mouseY, circle.x, circle.y, 8)
+      ) {
+        activeCircle = circle;
+        activeDotIndex = null;
+        document.querySelector(".choose").style.display = "block";
+        return;
+      }
+    }
+  }
+
+  function handleMove(e) {
+    if (previewMode) return;
+
+    const coords = getEventCoordinates(e, canvas);
+    const mouseX = coords.x;
+    const mouseY = coords.y;
+
+    // Handle potential drag detection for mobile devices
+    if (window.potentialDrag && !window.potentialDrag.isDragging) {
+      const dragThreshold = 10; // Increased for touch
+      const timeThreshold = 150; // ms - quick taps shouldn't trigger drag
+      const dragDistance = Math.hypot(
+        mouseX - window.potentialDrag.startX,
+        mouseY - window.potentialDrag.startY
+      );
+      const timePassed = Date.now() - window.potentialDrag.startTime;
+
+      if (dragDistance > dragThreshold && timePassed > timeThreshold) {
+        window.potentialDrag.isDragging = true;
+        draggingLine = window.potentialDrag.line;
+        draggingEndpoint = "end";
+
+        if (window.potentialDrag.circleAtEndpoint) {
+          draggingLine.attachedCircle = window.potentialDrag.circleAtEndpoint;
+        }
+      }
+    }
+
+    // Handle eraser hover detection
+    if (eraserMode) {
+      const elementUnderMouse = findElementUnderMouse(mouseX, mouseY);
+      if (elementUnderMouse !== hoveredElement) {
+        hoveredElement = elementUnderMouse;
+        draw();
+      }
+      return;
+    }
+
+    // Handle circle handle dragging
+    circles.forEach((circle) => {
+      if (!circle.draggingHandle) return;
+      const dx = mouseX - circle.x;
+      const dy = mouseY - circle.y;
+      circle.radius = Math.max(10, Math.sqrt(dx * dx + dy * dy)); // Minimum radius
+
+      if (circle.connectedLine) {
+        const line = circle.connectedLine;
+        const linedx = line.x2 - line.x1;
+        const linedy = line.y2 - line.y1;
+        const lineLength = Math.sqrt(linedx * linedx + linedy * linedy);
+
+        if (lineLength > 0) {
+          const unitX = linedx / lineLength;
+          const unitY = linedy / lineLength;
+          line.x2 = circle.x - unitX * circle.radius;
+          line.y2 = circle.y - unitY * circle.radius;
+        }
+      }
+
+      updateChildPositions(circle);
+      draw();
+    });
+
+    // Handle line dragging
+    if (draggingLine && draggingEndpoint === "end") {
+      const constrainedPoint = constrainToCanvas(mouseX, mouseY);
+      moveLineAndChildren(draggingLine, constrainedPoint.x, constrainedPoint.y);
+      draw();
+    }
+
+    // Handle control point dragging
+    if (draggingControlPoint) {
+      const constrainedPoint = constrainToCanvas(mouseX, mouseY);
+      draggingControlPoint.controlX = constrainedPoint.x;
+      draggingControlPoint.controlY = constrainedPoint.y;
+      draw();
+    }
+  }
+
+  function handleEnd(e) {
+    // Handle potential tap vs drag for mobile devices
+    if (window.potentialDrag && !window.potentialDrag.isDragging) {
+      const line = window.potentialDrag.line;
+      const circleAtEndpoint = window.potentialDrag.circleAtEndpoint;
+
+      if (!circleAtEndpoint && !line.attachedCircle) {
+        const endpointCircle = {
+          x: line.x2,
+          y: line.y2,
+          radius: 0,
+          draggingHandle: false,
+          visible: false,
+          usedDots: [],
+          isLineEndpoint: true,
+          connectedLine: line,
+          parentLine: line,
+        };
+
+        circles.push(endpointCircle);
+        line.attachedCircle = endpointCircle;
+        activeCircle = endpointCircle;
+        activeDotIndex = null;
+        document.querySelector(".choose").style.display = "block";
+        draw();
+      } else if (line.attachedCircle && !line.attachedCircle.visible) {
+        activeCircle = line.attachedCircle;
+        activeDotIndex = null;
+        document.querySelector(".choose").style.display = "block";
+        draw();
+      }
+    }
+
+    // Clean up states
+    window.potentialDrag = null;
+    circles.forEach((circle) => (circle.draggingHandle = false));
+    draggingLine = null;
+    draggingEndpoint = null;
+    draggingControlPoint = null;
+  }
+
+  // ADD CANVAS EVENT LISTENERS FUNCTION
+  function addCanvasEventListeners(canvas) {
+    // Prevent default touch behaviors that interfere with canvas
+    canvas.addEventListener(
+      "touchstart",
+      (e) => {
+        e.preventDefault();
+        handleStart(e);
+      },
+      { passive: false }
+    );
+
+    canvas.addEventListener(
+      "touchmove",
+      (e) => {
+        e.preventDefault();
+        handleMove(e);
+      },
+      { passive: false }
+    );
+
+    canvas.addEventListener(
+      "touchend",
+      (e) => {
+        e.preventDefault();
+        handleEnd(e);
+      },
+      { passive: false }
+    );
+
+    // Keep mouse events for desktop
+    canvas.addEventListener("mousedown", handleStart);
+    canvas.addEventListener("mousemove", handleMove);
+    canvas.addEventListener("mouseup", handleEnd);
+  }
+
+  // Initialize mobile canvas
+  addCanvasEventListeners(canvas);
+
   document.getElementById("circle").addEventListener("click", function () {
     if (activeCircle) {
       // is the circle on a line endpoint
@@ -883,316 +1104,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     selectedOption = null;
     document.querySelector(".choose").style.display = "none";
-  });
-
-  canvas.addEventListener("mousedown", (e) => {
-    // Don't allow interactions in preview mode
-    if (previewMode) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    // Handle eraser mode clicks
-    if (eraserMode) {
-      const elementToDelete = findElementUnderMouse(mouseX, mouseY);
-      if (elementToDelete) {
-        deleteElement(elementToDelete);
-        hoveredElement = null;
-
-        // Disable eraser mode after successful deletion
-        eraserMode = false;
-        const eraserButton = document.getElementById("eraser");
-        eraserButton.style.backgroundColor = "";
-        eraserButton.style.color = "";
-        canvas.style.cursor = "default";
-
-        draw();
-      }
-      return;
-    }
-
-    const isMobileDevice = window.innerWidth <= 780;
-
-    // check first for line endpoints or circle handles, the blue dots have priority
-    for (const line of lines) {
-      if (isInsideCircle(mouseX, mouseY, line.x2, line.y2, 6)) {
-        const circleAtEndpoint = circles.find(
-          (circle) =>
-            Math.abs(circle.x - line.x2) < 5 && Math.abs(circle.y - line.y2) < 5
-        );
-
-        if (e.shiftKey) {
-          // Desktop: shift + click to drag
-          draggingLine = line;
-          draggingEndpoint = "end";
-
-          if (circleAtEndpoint) {
-            draggingLine.attachedCircle = circleAtEndpoint;
-          }
-        } else if (isMobileDevice) {
-          // Mobile: distinguish between tap and drag
-          window.potentialDrag = {
-            line: line,
-            circleAtEndpoint: circleAtEndpoint,
-            startX: mouseX,
-            startY: mouseY,
-            isDragging: false,
-          };
-        } else if (!circleAtEndpoint && !line.attachedCircle) {
-          const endpointCircle = {
-            x: line.x2,
-            y: line.y2,
-            radius: 0,
-            draggingHandle: false,
-            visible: false,
-            usedDots: [],
-            isLineEndpoint: true,
-            connectedLine: line,
-            parentLine: line,
-          };
-
-          circles.push(endpointCircle);
-          line.attachedCircle = endpointCircle;
-          activeCircle = endpointCircle;
-          activeDotIndex = null;
-          document.querySelector(".choose").style.display = "block";
-          draw();
-        } else if (line.attachedCircle && !line.attachedCircle.visible) {
-          // if the circle is already on the line endpoint, just select it
-          activeCircle = line.attachedCircle;
-          activeDotIndex = null;
-          document.querySelector(".choose").style.display = "block";
-          draw();
-        }
-        return;
-      }
-    }
-
-    // Check for control points
-    for (const line of lines) {
-      if (line.controlX !== undefined && line.controlY !== undefined) {
-        if (isInsideCircle(mouseX, mouseY, line.controlX, line.controlY, 5)) {
-          draggingControlPoint = line;
-          return;
-        }
-      }
-    }
-
-    for (const circle of circles) {
-      if (!circle.visible) continue;
-
-      const handleX = circle.x + circle.radius * Math.cos(HANDLE_ANGLE);
-      const handleY = circle.y + circle.radius * Math.sin(HANDLE_ANGLE);
-
-      if (isInsideCircle(mouseX, mouseY, handleX, handleY, 8)) {
-        circle.draggingHandle = true;
-        return;
-      }
-
-      for (let i = 0; i < 16; i++) {
-        const angle = (i * Math.PI) / 8;
-        const dotX = circle.x + circle.radius * Math.cos(angle);
-        const dotY = circle.y + circle.radius * Math.sin(angle);
-
-        if (isInsideCircle(mouseX, mouseY, dotX, dotY, 5)) {
-          const newCircle = {
-            x: dotX,
-            y: dotY,
-            radius: 0,
-            draggingHandle: false,
-            visible: false,
-            usedDots: [],
-            parent: circle,
-            dotIndex: i,
-          };
-          circles.push(newCircle);
-          activeCircle = newCircle;
-          activeDotIndex = i;
-          document.querySelector(".choose").style.display = "block";
-          draw();
-          return;
-        }
-      }
-
-      // Only set up line dragging if specifically clicking on the endpoint
-      const isEndpoint = lines.some(
-        (line) =>
-          isInsideCircle(mouseX, mouseY, line.x2, line.y2, 6) &&
-          line.attachedCircle === circle
-      );
-
-      if (isEndpoint) {
-        const parentLine = lines.find((line) => line.attachedCircle === circle);
-        if (parentLine) {
-          draggingLine = parentLine;
-          draggingEndpoint = "end";
-          return;
-        }
-      }
-    }
-
-    // check for black dots, aka component places
-    for (const circle of circles) {
-      if (
-        !circle.visible &&
-        isInsideCircle(mouseX, mouseY, circle.x, circle.y, 5)
-      ) {
-        activeCircle = circle;
-        activeDotIndex = null;
-        document.querySelector(".choose").style.display = "block";
-        return;
-      }
-    }
-  });
-
-  function updateChildPositions(parentCircle) {
-    circles.forEach((child) => {
-      if (child.parent === parentCircle) {
-        const angle = (child.dotIndex * Math.PI) / 8;
-        child.x = parentCircle.x + parentCircle.radius * Math.cos(angle);
-        child.y = parentCircle.y + parentCircle.radius * Math.sin(angle);
-
-        lines.forEach((line) => {
-          if (
-            line.fromCircle === child &&
-            line.fromDotIndex === child.dotIndex
-          ) {
-            const angle = (child.dotIndex * Math.PI) / 8;
-            line.x1 = child.x + child.radius * Math.cos(angle);
-            line.y1 = child.y + child.radius * Math.sin(angle);
-          }
-        });
-
-        updateChildPositions(child);
-      }
-    });
-  }
-
-  canvas.addEventListener("mousemove", (e) => {
-    // Don't allow interactions in preview mode
-    if (previewMode) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    // Handle potential drag detection for mobile devices
-    if (window.potentialDrag && !window.potentialDrag.isDragging) {
-      const dragThreshold = 5; // pixels
-      const dragDistance = Math.hypot(
-        mouseX - window.potentialDrag.startX,
-        mouseY - window.potentialDrag.startY
-      );
-
-      if (dragDistance > dragThreshold) {
-        // User is dragging, not tapping
-        window.potentialDrag.isDragging = true;
-        draggingLine = window.potentialDrag.line;
-        draggingEndpoint = "end";
-
-        if (window.potentialDrag.circleAtEndpoint) {
-          draggingLine.attachedCircle = window.potentialDrag.circleAtEndpoint;
-        }
-      }
-    }
-
-    // Handle eraser hover detection
-    if (eraserMode) {
-      const elementUnderMouse = findElementUnderMouse(mouseX, mouseY);
-
-      if (elementUnderMouse !== hoveredElement) {
-        hoveredElement = elementUnderMouse;
-        draw(); // Redraw to show/hide red outline
-      }
-      return; // Don't process other mouse interactions in eraser mode
-    }
-
-    // ... rest of the existing mousemove logic for dragging handles, lines, etc.
-    circles.forEach((circle) => {
-      if (!circle.draggingHandle) return;
-      const dx = mouseX - circle.x;
-      const dy = mouseY - circle.y;
-      circle.radius = Math.sqrt(dx * dx + dy * dy);
-
-      // Update line endpoint if this circle is attached to a line
-      if (circle.connectedLine) {
-        const line = circle.connectedLine;
-        const linedx = line.x2 - line.x1;
-        const linedy = line.y2 - line.y1;
-        const lineLength = Math.sqrt(linedx * linedx + linedy * linedy);
-
-        if (lineLength > 0) {
-          const unitX = linedx / lineLength;
-          const unitY = linedy / lineLength;
-
-          // Update line endpoint to be on the circle's edge
-          line.x2 = circle.x - unitX * circle.radius;
-          line.y2 = circle.y - unitY * circle.radius;
-        }
-      }
-
-      updateChildPositions(circle);
-      draw();
-    });
-
-    if (draggingLine && draggingEndpoint === "end") {
-      const constrainedPoint = constrainToCanvas(mouseX, mouseY);
-      moveLineAndChildren(draggingLine, constrainedPoint.x, constrainedPoint.y);
-      draw();
-    }
-
-    if (draggingControlPoint) {
-      const constrainedPoint = constrainToCanvas(mouseX, mouseY);
-      draggingControlPoint.controlX = constrainedPoint.x;
-      draggingControlPoint.controlY = constrainedPoint.y;
-      draw();
-    }
-  });
-
-  canvas.addEventListener("mouseup", (e) => {
-    // Handle potential tap vs drag for mobile devices
-    if (window.potentialDrag && !window.potentialDrag.isDragging) {
-      // This was a tap, not a drag - handle component addition
-      const line = window.potentialDrag.line;
-      const circleAtEndpoint = window.potentialDrag.circleAtEndpoint;
-
-      if (!circleAtEndpoint && !line.attachedCircle) {
-        const endpointCircle = {
-          x: line.x2,
-          y: line.y2,
-          radius: 0,
-          draggingHandle: false,
-          visible: false,
-          usedDots: [],
-          isLineEndpoint: true,
-          connectedLine: line,
-          parentLine: line,
-        };
-
-        circles.push(endpointCircle);
-        line.attachedCircle = endpointCircle;
-        activeCircle = endpointCircle;
-        activeDotIndex = null;
-        document.querySelector(".choose").style.display = "block";
-        draw();
-      } else if (line.attachedCircle && !line.attachedCircle.visible) {
-        // if the circle is already on the line endpoint, just select it
-        activeCircle = line.attachedCircle;
-        activeDotIndex = null;
-        document.querySelector(".choose").style.display = "block";
-        draw();
-      }
-    }
-
-    // Clean up potential drag state
-    window.potentialDrag = null;
-
-    // Existing cleanup
-    circles.forEach((circle) => (circle.draggingHandle = false));
-    draggingLine = null;
-    draggingEndpoint = null;
-    draggingControlPoint = null;
   });
 
   document.getElementById("line").addEventListener("click", () => {
@@ -1423,7 +1334,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
   // functions for saving glyphs
-
   function saveGlyph() {
     const title = document.getElementById("title").value.trim();
     const description = document
@@ -1551,6 +1461,7 @@ document.addEventListener("DOMContentLoaded", function () {
           ". Please message me on Discord if this keeps happening.";
       });
   }
+
   //hamburger menu click handler
   const hamburgerMenu = document.querySelector(".hamburger-menu");
   const dropdownContent = document.querySelector(".dropdown-content");

@@ -994,3 +994,21 @@ html {
     height: 185px;
   }
 }
+
+@media (max-width: 430px) {
+  .left-page {
+    display: none;
+  }
+
+  .rings {
+    display: none;
+  }
+
+  .forward-arrow {
+    display: none;
+  }
+
+  .chair {
+    display: none;
+  }
+}

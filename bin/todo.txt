@@ -2,6 +2,9 @@
 
 
 1. MUST HAVE
+ban users who misuse the website by blocking their ip adress (check claude output)
+MAKE A PATCH NOTES PAGE
+fix heart icon not filled in when liked on popular page
 make small laptop responsive
 make phone responsive
 fix sticky notes not on some pages

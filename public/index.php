@@ -25,6 +25,7 @@ $routes = [
     'admin' => 'admin.php',
     'glyph' => 'show-glyph.php',
     'favorite-glyphs' => 'favorite-glyphs.php',
+    'andra' => 'andra.php',
 ];
 
 $db = new Database();
