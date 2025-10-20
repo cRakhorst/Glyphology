@@ -5,12 +5,13 @@ class Database
     private static function connect()
     {
         $conn = null;
-        $servername = "127.0.0.1";
-        $username = "glyph_account";
-        $password = "password123";
-        $dbname = "klas4s24_599903";
+        $config = require __DIR__ . '/../../config/database.php';
         try {
-            $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+            $conn = new PDO(
+                "mysql:host={$config['host']};dbname={$config['dbname']}", 
+                $config['username'], 
+                $config['password']
+            );
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return $conn;
         } catch (PDOException $e) {
@@ -444,3 +445,4 @@ class Database
         }
     }
 }
+ 
